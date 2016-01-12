@@ -52,3 +52,30 @@ var getRandomColorStyle = function () {
     var b = Math.round(Math.random() * 255);
     return "rgb(" + r + "," + g + "," + b + ")";
 }
+
+/**
+ * Returns color objects array that represents color transition.
+ * Color object is specified in the format { red: 0, green: 0, blue: 0 }.
+ * @param beginColor The color object of begin color.
+ * @param endColor The color object of end color in transition.
+ * @param steps The number of steps in transition.
+ * @return Array of color objects.
+ */
+var getColorTransition = function (beginColor, endColor, steps) {
+
+    var redDelta = (endColor.red - beginColor.red) / steps;
+    var greenDelta = (endColor.green - beginColor.green) / steps;
+    var blueDelta = (endColor.blue - beginColor.blue) / steps;
+
+    var transition = [];
+    for (var i = 0; i <= steps; i++) {
+        transition.push(
+            {
+                red: Math.floor(beginColor.red + redDelta * i),
+                green: Math.floor(beginColor.green + greenDelta * i),
+                blue: Math.floor(beginColor.blue + blueDelta * i)
+            });
+    }
+
+    return transition;
+}
