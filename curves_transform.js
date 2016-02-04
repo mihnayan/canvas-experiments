@@ -5,6 +5,7 @@ var figure11 = [
             "g": 0xE3,
             "b": 0
         },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "curveByPoints",
@@ -32,6 +33,7 @@ var figure11 = [
             "g": 0,
             "b": 0
         },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "arc",
@@ -45,6 +47,7 @@ var figure11 = [
             "g": 0x4B,
             "b": 0x95
         },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "quadraticCurve",
@@ -102,6 +105,7 @@ var figure11 = [
             "g": 0xE3,
             "b": 0
         },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "line",
@@ -121,6 +125,12 @@ var figure11 = [
 
 var figure12 = [
     {
+        "color": {
+            "r": 0xEA,
+            "g": 0xE3,
+            "b": 0
+        },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "curveByPoints",
@@ -143,6 +153,12 @@ var figure12 = [
         ]
     },
     {
+        "color": {
+            "r": 0xE6,
+            "g": 0,
+            "b": 0
+        },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "arc",
@@ -151,6 +167,12 @@ var figure12 = [
         ]
     },
     {
+        "color": {
+            "r": 0x96,
+            "g": 0x4B,
+            "b": 0x95
+        },
+        "glowEffect": true,
         "elements": [
             {
                 "elementType": "quadraticCurve",
@@ -203,6 +225,12 @@ var figure12 = [
         ]
     },
     {
+        "color": {
+            "r": 0xEA,
+            "g": 0xE3,
+            "b": 0
+        },
+        "glowEffect": true, 
         "elements": [
             {
                 "elementType": "line",
@@ -220,155 +248,12 @@ var figure12 = [
     }
 ];
 
-var drawFigure = function (ctx, figure, clear) {
-    
-    var drawElements = {
-        curveByPoints: function (points) {
-            var p_len = points.length;
-            if (p_len < 4) return;
-
-            ctx.moveTo(points[0], points[1]);
-            if (p_len < 6) {
-                ctx.lineTo(points[2], points[3]);
-                return;
-            }
-
-            for (var i = 2; i < p_len - 4; i += 2) {
-                var xc = (points[i] + points[i + 2]) / 2;
-                var yc = (points[i + 1] + points[i + 3]) / 2;
-                ctx.quadraticCurveTo(points[i], points[i + 1], xc, yc);
-            }
- 
-            ctx.quadraticCurveTo(points[i], points[i + 1], points[i + 2], points[i + 3]);
-            ctx.stroke();
-        },
-        quadraticCurve: function (points) {
-            ctx.moveTo(points[0], points[1]);
-            ctx.quadraticCurveTo(points[2], points[3], points[4], points[5]);
-            ctx.stroke();
-        },
-        arc: function (points) {
-            ctx.arc(points[0], points[1], points[2], points[3], points[4]);
-        },
-        line: function (points) {
-            ctx.moveTo(points[0], points[1]);
-            ctx.lineTo(points[2], points[3]);
-        }
-    };
-
-    for (var i = 0; i < figure.length; i++) {
-        var curFig = figure[i];
-        ctx.beginPath();
-        if (clear) {
-            ctx.strokeStyle = "#000";
-            ctx.lineWidth = 20;
-        } else {
-            ctx.strokeStyle = 'rgb(' 
-                    + curFig.color.r + ','
-                    + curFig.color.g + ','
-                    + curFig.color.b + ')';
-            ctx.lineWidth = 1;
-        }
-
-        for (var j = 0; j < curFig.elements.length; j++) {
-            var curElem = curFig.elements[j];
-            drawElements[curElem.elementType](curElem.points);
-        }
-        ctx.stroke();
-    }
-};
-
-var linearTransformation = function (ctx, source, target, steps) {
-
-    var getDelta = function (srcPoints, trgtPoints) {
-        var res = {
-            "delta": []
-        };
-        for (var i = 0; i < srcPoints.length; i++) {
-            var dp = (trgtPoints[i] - srcPoints[i]) / steps;
-            res.delta.push(dp);
-        }
-        return res;
-    }
-
-    if (source.length !== target.length) {
-        console.log("Can't transform figure: source and target figure must contain the same number of paths");
-        return;
-    }
-
-    var deltaPoints = [];
-
-    for (var path_index = 0; path_index < source.length; path_index++) {
-        var srcElms = source[path_index].elements;
-        var trgtElms = target[path_index].elements;        
-        if (srcElms.length !== trgtElms.length) {
-            console.log("Can't transform figure: figures must contain same number of elements in path #" 
-                + path_index);
-            return;
-        }
-        deltaPoints.push({});
-        deltaPoints[path_index].elements = [];
-
-        for (var elm_index = 0; elm_index < srcElms.length; elm_index++) {
-            if (srcElms[elm_index].elementType !== trgtElms[elm_index].elementType) {
-                console.log("Can't transform element type \"" + srcElms[elm_index].elementType
-                    + "\" to \"" + trgtElms[elm_index].elementType + "\" in path #"
-                    + path_index + "element #" + elm_index);
-                return;
-            }
-            var srcPoints = srcElms[elm_index].points;
-            var trgtPoints = trgtElms[elm_index].points;
-            if (srcPoints.length !== trgtPoints.length) {
-                console.log("Can't transform element #" + elm_index + " in path #"
-                    + path_index +": elements must contain same number of points");
-                return;
-            }
-            deltaPoints[path_index].elements.push(getDelta(srcPoints, trgtPoints));
-        }
-    }
-
-    var getIncPoints = function (points, deltas) {
-        var res = [];
-        for (var i = 0; i < points.length; i++) {
-            res.push(points[i] + deltas[i]);
-        }
-        return res;
-    }
-    
-    var current = source;
-    var transform = function (step) {
-        var next = [];
-        for (var path_index = 0; path_index < current.length; path_index++) {
-            curElms = current[path_index].elements;
-            next.push({});
-            next[path_index].color = current[path_index].color;
-            next[path_index].elements = [];
-            for (var elm_index = 0; elm_index < curElms.length; elm_index++) {
-                next[path_index].elements.push({});
-                curElm = next[path_index].elements[elm_index];
-                curElm.elementType = curElms[elm_index].elementType;
-                curElm.points = getIncPoints(curElms[elm_index].points,
-                    deltaPoints[path_index].elements[elm_index].delta);
-            }
-        }
-        drawFigure(ctx, current, true);
-        drawFigure(ctx, next);
-        current = next;
-        if (step > 1) {
-            setTimeout(function () {
-                transform(--step);
-            }, 50);
-        }
-    }
-
-    setTimeout(function () {
-            transform(steps);
-        }, 300);
-}
-
 window.onload = function () {
     var ctx = document.getElementById("cnv").getContext("2d");
-
-    drawFigure(ctx, figure11);
-    linearTransformation(ctx, figure11, figure12, 20);
+    graphics.init({
+        canvasContext: ctx, 
+        backgroundColor: '#000'
+    });
+    graphics.drawFigure(figure11);
+    graphics.animator.transformFigure(figure11, figure12, 1);
 }

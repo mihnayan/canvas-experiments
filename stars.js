@@ -27,26 +27,30 @@ var stars = [
     }
 ];
 
-var drawKokhLine = function (lenght, deep) {
-    if (deep == 0) {
-        pen.draw(lenght);
-        return;
+var drawStars = function () {
+
+    var pen = graphics.pen;
+
+    var drawKokhLine = function (lenght, deep) {
+        if (deep == 0) {
+            pen.draw(lenght);
+            return;
+        }
+
+        var linePart = lenght / 3;
+        drawKokhLine(linePart, deep - 1);
+        pen.turn(-60);
+        drawKokhLine(linePart, deep - 1);
+        pen.turn(120);
+        drawKokhLine(linePart, deep - 1);
+        pen.turn(-60);
+        drawKokhLine(linePart, deep - 1);
     }
 
-    var linePart = lenght / 3;
-    drawKokhLine(linePart, deep - 1);
-    pen.turn(-60);
-    drawKokhLine(linePart, deep - 1);
-    pen.turn(120);
-    drawKokhLine(linePart, deep - 1);
-    pen.turn(-60);
-    drawKokhLine(linePart, deep - 1);
-}
-
-var drawStars = function () {
     var edgeLength = starInit.edgeLength;
     var decrement = 0;
 
+    pen.setLineWidth(3);
     pen.turn(30);
     for (var n = 0; n < stars.length; n++) {
 
@@ -61,7 +65,7 @@ var drawStars = function () {
         var angleY = starInit.centerY + (triangleHeight - radius);
 
         pen.move(starInit.centerX, angleY);
-        pen.setStyle(getRandomColorStyle());
+        pen.setStyle(graphics.getRandomColorStyle());
         for (var i = 1; i <= 3; i++) {
             pen.turn(120);
             drawKokhLine(edgeLength, stars[n].level);
@@ -71,8 +75,6 @@ var drawStars = function () {
 
 window.onload = function () {
     var ctx = document.getElementById("cnv").getContext("2d");
-    pen.init({canvasContext: ctx});
-    pen.setLineWidth(3);
-
+    graphics.init({canvasContext: ctx});
     drawStars();
 }
