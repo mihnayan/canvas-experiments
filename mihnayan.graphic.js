@@ -45,8 +45,18 @@ var graphics = (function () {
     };
     
     var drawFigure = function (figure, clear) {
+
+        var getRGBString = function (r, g, b, a) {
+            var rgb = [r, g, b];
+            var str = 'rgb(';
+            if (typeof(a) === 'number') {
+                rgb.push(a);
+                str = 'rgba(';
+            }
+            return str + rgb.join(',') + ')';
+        }
     
-        var drawElements = {
+        var drawElement = {
             curveByPoints: function (points) {
                 var p_len = points.length;
                 if (p_len < 4) return;
@@ -64,12 +74,12 @@ var graphics = (function () {
                 }
  
                 ctx.quadraticCurveTo(points[i], points[i + 1], points[i + 2], points[i + 3]);
-                ctx.stroke();
+                // ctx.stroke();
             },
             quadraticCurve: function (points) {
                 ctx.moveTo(points[0], points[1]);
                 ctx.quadraticCurveTo(points[2], points[3], points[4], points[5]);
-                ctx.stroke();
+                // ctx.stroke();
             },
             arc: function (points) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4]);
@@ -80,25 +90,50 @@ var graphics = (function () {
             }
         };
 
+        var drawElements = function (elements) {
+            for (var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+                drawElement[element.elementType](element.points);
+            }
+        }
+
+        var drawPath = function (path) {
+            ctx.beginPath();
+            ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
+            ctx.lineWidth = 1;
+            drawElements(path.elements);
+            ctx.stroke();
+        }
+
+        var drawGlowPath = function (path) {
+            for (var i = 5; i >= 0; i--) {
+                ctx.beginPath();
+                ctx.lineCap = 'square';
+                ctx.lineWidth = (i * 2) + 1;
+                if (i === 0) {
+                    ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
+                } else {
+                    ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
+                }
+                drawElements(path.elements);
+                ctx.stroke();
+            }
+            ctx.lineCap = 'butt';
+        };
+
+        var clearPath = function (path) {
+            ctx.beginPath();
+            ctx.strokeStyle = backgroundColor;
+            ctx.lineWidth = 30;
+            ctx.lineCap = 'square';
+            drawElements(path.elements);
+            ctx.stroke();
+            ctx.lineCap = 'butt';
+        }
+
         for (var i = 0; i < figure.length; i++) {
             var path = figure[i];
-            ctx.beginPath();
-            if (clear) {
-                ctx.strokeStyle = backgroundColor;
-                ctx.lineWidth = 30;
-            } else {
-                ctx.strokeStyle = 'rgb(' 
-                        + path.color.r + ','
-                        + path.color.g + ','
-                        + path.color.b + ')';
-                ctx.lineWidth = 1;
-            }
-
-            for (var j = 0; j < path.elements.length; j++) {
-                var elem = path.elements[j];
-                drawElements[elem.elementType](elem.points);
-            }
-            ctx.stroke();
+            clear ? clearPath(path) : drawGlowPath(path);
         }
     };
 
