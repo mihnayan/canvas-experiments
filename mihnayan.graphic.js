@@ -29,20 +29,6 @@ var graphics = (function () {
 
     var ctx;
     var backgroundColor;
-
-    var drawGlowLine = function (r, g, b, drawFunction) {
-        for (var i = 5; i >= 0; i--) {
-            ctx.beginPath();
-            ctx.lineWidth = (i * 2) + 1;
-            if (i === 0) {
-                ctx.strokeStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
-            } else {
-                ctx.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + 0.07 + ')';
-            }
-            drawFunction();
-            ctx.stroke();
-        }
-    };
     
     var drawFigure = function (figure, clear) {
 
@@ -74,12 +60,10 @@ var graphics = (function () {
                 }
  
                 ctx.quadraticCurveTo(points[i], points[i + 1], points[i + 2], points[i + 3]);
-                // ctx.stroke();
             },
             quadraticCurve: function (points) {
                 ctx.moveTo(points[0], points[1]);
                 ctx.quadraticCurveTo(points[2], points[3], points[4], points[5]);
-                // ctx.stroke();
             },
             arc: function (points) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4]);
@@ -108,7 +92,7 @@ var graphics = (function () {
         var drawGlowPath = function (path) {
             for (var i = 5; i >= 0; i--) {
                 ctx.beginPath();
-                ctx.lineCap = 'square';
+                ctx.lineCap = 'round';
                 ctx.lineWidth = (i * 2) + 1;
                 if (i === 0) {
                     ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
