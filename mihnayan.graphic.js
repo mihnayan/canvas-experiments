@@ -29,18 +29,18 @@ var graphics = (function () {
 
     var ctx;
     var backgroundColor;
+
+    var getRGBString = function (r, g, b, a) {
+        var rgb = [r, g, b];
+        var str = 'rgb(';
+        if (typeof(a) === 'number') {
+            rgb.push(a);
+            str = 'rgba(';
+        }
+        return str + rgb.join(',') + ')';
+    };
     
     var drawFigure = function (figure, clear) {
-
-        var getRGBString = function (r, g, b, a) {
-            var rgb = [r, g, b];
-            var str = 'rgb(';
-            if (typeof(a) === 'number') {
-                rgb.push(a);
-                str = 'rgba(';
-            }
-            return str + rgb.join(',') + ')';
-        }
     
         var drawElement = {
             curveByPoints: function (points) {
@@ -121,6 +121,11 @@ var graphics = (function () {
         }
     };
 
+    var clearRect = function (x, y, w, h) {
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(x, y, w, h);
+    }
+
     var pen = function () {
 
         var posX = 0;
@@ -167,12 +172,12 @@ var graphics = (function () {
     var animator = function () {
 
         var fps = 25;
+        var delay = 1000 / fps;
 
         return {
             transformFigure: function (source, target, speed) {
 
                 var steps = Math.floor(fps * speed);
-                var delay = 1000 / fps;
 
                 var getDelta = function (srcPoints, trgtPoints) {
                     var res = {
@@ -262,6 +267,30 @@ var graphics = (function () {
                 }
 
                 transform(steps);
+            },
+
+            rotate: function (figure, x, y, angle, speed) {
+
+                var steps = Math.floor(fps * speed);
+                var deltaAngle = angle / steps;
+                var currentAngle = 0;
+
+                var goRotate = function (step) {
+                    if (step === 0) return;
+                    currentAngle += deltaAngle;
+                    clearRect(0,0, 600,500);
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(Math.PI * currentAngle / 180);
+                    ctx.translate(-x, -y);
+                    drawFigure(figure);
+                    ctx.restore();
+                    setTimeout(function () {
+                        goRotate(--steps);
+                    }, delay);
+                }
+
+                goRotate(steps);
             }
         }
     };
