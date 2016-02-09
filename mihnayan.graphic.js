@@ -124,7 +124,16 @@ var graphics = (function () {
     var clearRect = function (x, y, w, h) {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(x, y, w, h);
-    }
+    };
+
+    var rotate = function (figure, x0, y0, angle) {
+        ctx.save();
+        ctx.translate(x0, y0);
+        ctx.rotate(Math.PI * angle / 180);
+        ctx.translate(-x0, -y0);
+        drawFigure(figure);
+        ctx.restore();  
+    };
 
     var pen = function () {
 
@@ -173,6 +182,7 @@ var graphics = (function () {
 
         var fps = 25;
         var delay = 1000 / fps;
+        var graphicsRotate = rotate;
 
         return {
             transformFigure: function (source, target, speed) {
@@ -279,12 +289,7 @@ var graphics = (function () {
                     if (step === 0) return;
                     currentAngle += deltaAngle;
                     clearRect(0,0, 600,500);
-                    ctx.save();
-                    ctx.translate(x, y);
-                    ctx.rotate(Math.PI * currentAngle / 180);
-                    ctx.translate(-x, -y);
-                    drawFigure(figure);
-                    ctx.restore();
+                    graphicsRotate(figure, x, y, currentAngle);
                     setTimeout(function () {
                         goRotate(--steps);
                     }, delay);
@@ -317,7 +322,9 @@ var graphics = (function () {
             return "rgb(" + r + "," + g + "," + b + ")";
         },
 
-        drawFigure: drawFigure
+        drawFigure: drawFigure,
+
+        rotate: rotate
     };
     
 })();

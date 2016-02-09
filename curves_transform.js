@@ -256,4 +256,5 @@ window.onload = function () {
     });
     graphics.drawFigure(figure11);
     graphics.animator.transformFigure(figure11, figure12, 1);
+    graphics.rotate(figure12, 210, 150, -45);
 }
