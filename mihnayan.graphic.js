@@ -300,6 +300,74 @@ var graphics = (function () {
         }
     };
 
+    var animationManager = function(x, y, w, h) {
+
+        var FPS = 25;
+        var stoped = true;
+
+        var zeroTime = Date.now();
+        var motions = [];
+
+        var delay = Math.floor(1000 / FPS);
+
+        var motion = function (figure, motionFunc) {
+            var inMotion = false;
+
+            return {
+                start: function () { inMotion = true },
+                pause: function () { inMotion = false },
+                move: motionFunction
+            }
+        };
+
+        var clear = function () {
+            clearRect(x, y, w, h);
+        };
+
+        var rotateMotion = function (figure, x, y, angle, inTime) {
+
+            var stopTime = inTime + Date.now();
+
+            return function () {
+                var now = Date.now();
+                var currentAngle = angle;
+                if (now < stopTime) {
+                    currentAngle = angle * (inTime - stopTime + now) / inTime;
+                }
+                rotate(figure, x, y, currentAngle);
+            }
+        }
+
+        var animate = function () {
+
+            if (stopped) return;
+
+            clear();
+            for (var i = 0; i < motions.length; i++) {
+                motions[i]();
+            }
+
+            setTimeout(animate, delay);
+        };
+
+        return {
+            start: function () {
+                stopped = false;
+                animate();
+            },
+
+            stop: function () {
+                stopped = true;
+            },
+
+            addMotion: function (motion) {
+                motions.push(motion);
+            },
+
+            getRotateMotion: rotateMotion
+        };
+    }
+
     return {
         init: function (params) {
             ctx = params.canvasContext;
@@ -314,6 +382,7 @@ var graphics = (function () {
         pen: pen(),
 
         animator: animator(),
+        animationManager: animationManager,
 
         getRandomColorStyle: function () {
             var r = Math.round(Math.random() * 255);

@@ -168,5 +168,8 @@ window.onload = function () {
     // graphics.drawFigure(leg);
     // graphics.drawFigure(eyeball);
     // graphics.animator.transformFigure(fish, mouth, 1);
-    graphics.animator.rotate(leg, 210, 150, -1440, 5);
+    // graphics.animator.rotate(leg, 210, 150, -1440, 5);
+    var am = graphics.animationManager(0,0, 400,400);
+    am.addMotion(am.getRotateMotion(leg, 210, 150, -720, 8000));
+    am.start();
 }
