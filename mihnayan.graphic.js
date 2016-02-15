@@ -303,22 +303,10 @@ var graphics = (function () {
     var animationManager = function(x, y, w, h) {
 
         var FPS = 25;
-        var stoped = true;
-
-        var zeroTime = Date.now();
-        var motions = [];
-
+        var started = false;
         var delay = Math.floor(1000 / FPS);
 
-        var motion = function (figure, motionFunc) {
-            var inMotion = false;
-
-            return {
-                start: function () { inMotion = true },
-                pause: function () { inMotion = false },
-                move: motionFunction
-            }
-        };
+        var motions = [];
 
         var clear = function () {
             clearRect(x, y, w, h);
@@ -326,38 +314,68 @@ var graphics = (function () {
 
         var rotateMotion = function (figure, x, y, angle, inTime) {
 
-            var stopTime = inTime + Date.now();
+            var paused = true;
+            var started = false;
 
-            return function () {
-                var now = Date.now();
-                var currentAngle = angle;
-                if (now < stopTime) {
-                    currentAngle = angle * (inTime - stopTime + now) / inTime;
+            var stopTime;
+            var lastTime;
+
+            return {
+                start: function () {
+                    paused = false;
+                    if (started) return;
+                    started = true;
+                    lastTime = Date.now();
+                    stopTime = inTime + lastTime;
+                },
+                pause: function () { paused = true; },
+                stop: function () {
+                    paused = true;
+                    started = false;
+                },
+                move: function () {
+                    if (!started) return;
+                    var now = Date.now();                   
+                    if (paused) {
+                        stopTime += (now - lastTime);
+                    }
+                    var currentAngle = angle;
+                    if (now < stopTime) {
+                        currentAngle = angle * (inTime - stopTime + now) / inTime;
+                    }
+                    rotate(figure, x, y, currentAngle);
+                    lastTime = now;
                 }
-                rotate(figure, x, y, currentAngle);
-            }
+            };
         }
 
         var animate = function () {
 
-            if (stopped) return;
+            if (!started) return;
 
             clear();
-            for (var i = 0; i < motions.length; i++) {
-                motions[i]();
-            }
+            motions.forEach(function (elem) {
+                elem.move();
+            });
 
             setTimeout(animate, delay);
         };
 
         return {
             start: function () {
-                stopped = false;
+                if (started) return;
+                started = true;
+                motions.forEach(function (elem) {
+                    elem.start();
+                });
                 animate();
             },
 
             stop: function () {
-                stopped = true;
+                started = false;
+                motions.forEach(function (elem) {
+                    elem.stop();
+                });
             },
 
             addMotion: function (motion) {

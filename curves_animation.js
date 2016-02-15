@@ -170,6 +170,9 @@ window.onload = function () {
     // graphics.animator.transformFigure(fish, mouth, 1);
     // graphics.animator.rotate(leg, 210, 150, -1440, 5);
     var am = graphics.animationManager(0,0, 400,400);
-    am.addMotion(am.getRotateMotion(leg, 210, 150, -720, 8000));
-    am.start();
+    var legRotateMotion = am.getRotateMotion(leg, 210, 150, -720, 8000);
+    am.addMotion(legRotateMotion);
+    setTimeout(am.start, 4000);
+    setTimeout(legRotateMotion.pause, 7000);
+    setTimeout(legRotateMotion.start, 10000);
 }
