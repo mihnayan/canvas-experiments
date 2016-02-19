@@ -169,10 +169,15 @@ window.onload = function () {
     // graphics.drawFigure(eyeball);
     // graphics.animator.transformFigure(fish, mouth, 1);
     // graphics.animator.rotate(leg, 210, 150, -1440, 5);
+
     var am = graphics.animationManager(0,0, 400,400);
     var legRotateMotion = am.getRotateMotion(leg, 210, 150, -720, 8000);
     am.addMotion(legRotateMotion);
-    setTimeout(am.start, 4000);
+
+    var fishTransformMotion = am.getTransformMotion(fish, mouth, 8000);
+    am.addMotion(fishTransformMotion);
+
+    setTimeout(am.start, 2000);
     setTimeout(legRotateMotion.pause, 7000);
     setTimeout(legRotateMotion.start, 10000);
 }

@@ -39,6 +39,24 @@ var graphics = (function () {
         }
         return str + rgb.join(',') + ')';
     };
+
+    var copyFigure = function (figure) {
+        var newFigure = figure.map(function (path) {
+            return {
+                color: {r: path.color.r, g: path.color.g, b: path.color.b},
+                glowEffect: path.glowEffect,
+                elements: path.elements.map(function (elem) {
+                    return {
+                        elementType: elem.elementType,
+                        points: elem.points.map(function (point) {
+                            return point;
+                        })
+                    };
+                })
+            };
+        });
+        return newFigure;
+    };
     
     var drawFigure = function (figure, clear) {
     
@@ -312,7 +330,75 @@ var graphics = (function () {
             clearRect(x, y, w, h);
         };
 
-        var rotateMotion = function (figure, x, y, angle, inTime) {
+        var getRotationMove = function (figure, x, y, angle) {
+
+            return function (diff) {
+                rotate(figure, x, y, angle * diff);
+            }
+        };
+
+        var getTransformationMove = function (source, target) {
+
+                var errorFunc = function (msg) {
+                    return function () {
+                        console.log(msg);
+                    }
+                }
+
+                if (source.length !== target.length) {
+                    return errorFunc("Can't transform figure: source and target figure must contain the same number of paths");
+                }
+
+                var workFigure = copyFigure(source);
+
+                for (var path_indx = 0; path_indx < workFigure.length; path_indx++) {
+                    var workPath = workFigure[path_indx];
+                    var trgPath = target[path_indx];
+                    if (workPath.elements.length !== trgPath.elements.length) {
+                        return errorFunc("Can't transform figure: figures must same number of elements in path #" 
+                            + path_indx);
+                    }
+
+                    for (var elem_indx = 0; elem_indx < workPath.elements.length; elem_indx++) {
+                        var workElem = workPath.elements[elem_indx];
+                        var trgElem = trgPath.elements[elem_indx];
+                        if (workElem.elementType !== trgElem.elementType) {
+                            return errorFunc("Can't transform element type \"" 
+                                + workElem.elementType
+                                + "\" to \"" + trgtElem.elementType + "\" in path #"
+                                + path_indx + "element #" + elem_indx);
+                        }
+                        var workPoints = workElem.points;
+                        var trgPoints = trgElem.points;
+                        if (workPoints.length !== trgPoints.length) {
+                            return errorFunc("Can't transform element #" + elem_indx + " in path #"
+                                + path_indx +": elements must contain same number of points");
+                        }
+
+                        workElem.srcPoints = [];
+                        workElem.deltas = [];
+                        workPoints.forEach(function (point, i) {
+                            workElem.srcPoints.push(point);
+                            workElem.deltas.push(trgPoints[i] - point);
+                        })
+                    }
+                }
+    
+                return function (diff) {
+
+                    workFigure.forEach(function (path) {
+                        path.elements.forEach(function (elem) {
+                            elem.srcPoints.forEach(function (point, i) {
+                                elem.points[i] = point + elem.deltas[i] * diff;
+                            })
+                        })
+                    });
+                    drawFigure(workFigure);
+                }
+
+            };
+
+        var getMotion = function (move, inTime) {
 
             var paused = true;
             var started = false;
@@ -339,15 +425,15 @@ var graphics = (function () {
                     if (paused) {
                         stopTime += (now - lastTime);
                     }
-                    var currentAngle = angle;
-                    if (now < stopTime) {
-                        currentAngle = angle * (inTime - stopTime + now) / inTime;
-                    }
-                    rotate(figure, x, y, currentAngle);
                     lastTime = now;
+                    var diff = 1;
+                    if (now < stopTime) {
+                        diff = (inTime + now - stopTime) / inTime
+                    }
+                    move(diff);
                 }
             };
-        }
+        };
 
         var animate = function () {
 
@@ -382,7 +468,13 @@ var graphics = (function () {
                 motions.push(motion);
             },
 
-            getRotateMotion: rotateMotion
+            getRotateMotion: function (figure, x, y, angle, inTime) {
+                return getMotion(getRotationMove(figure, x, y, angle), inTime);
+            }, 
+
+            getTransformMotion: function (sourceFigure, targetFigure, inTime) {
+                return getMotion(getTransformationMove(sourceFigure, targetFigure), inTime);
+            }
         };
     }
 
@@ -410,6 +502,8 @@ var graphics = (function () {
         },
 
         drawFigure: drawFigure,
+
+        copyFigure: copyFigure,
 
         rotate: rotate
     };
