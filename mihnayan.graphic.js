@@ -196,135 +196,14 @@ var graphics = (function () {
         }
     };
 
-    var animator = function () {
-
-        var fps = 25;
-        var delay = 1000 / fps;
-        var graphicsRotate = rotate;
-
-        return {
-            transformFigure: function (source, target, speed) {
-
-                var steps = Math.floor(fps * speed);
-
-                var getDelta = function (srcPoints, trgtPoints) {
-                    var res = {
-                        "delta": []
-                    };
-                    for (var i = 0; i < srcPoints.length; i++) {
-                        var dp = (trgtPoints[i] - srcPoints[i]) / steps;
-                        res.delta.push(dp);
-                    }
-                    return res;
-                }
-
-                if (source.length !== target.length) {
-                    console.log("Can't transform figure: source and target figure must contain the same number of paths");
-                    return;
-                }
-
-                var deltaPoints = [];
-
-                for (var path_index = 0; path_index < source.length; path_index++) {
-                    var srcElms = source[path_index].elements;
-                    var trgtElms = target[path_index].elements;        
-                    if (srcElms.length !== trgtElms.length) {
-                        console.log("Can't transform figure: figures must contain same number of elements in path #" 
-                            + path_index);
-                        return;
-                    }
-                    deltaPoints.push({});
-                    deltaPoints[path_index].elements = [];
-
-                    for (var elm_index = 0; elm_index < srcElms.length; elm_index++) {
-                        if (srcElms[elm_index].elementType !== trgtElms[elm_index].elementType) {
-                            console.log("Can't transform element type \"" + srcElms[elm_index].elementType
-                                + "\" to \"" + trgtElms[elm_index].elementType + "\" in path #"
-                                + path_index + "element #" + elm_index);
-                            return;
-                        }
-                        var srcPoints = srcElms[elm_index].points;
-                        var trgtPoints = trgtElms[elm_index].points;
-                        if (srcPoints.length !== trgtPoints.length) {
-                            console.log("Can't transform element #" + elm_index + " in path #"
-                                + path_index +": elements must contain same number of points");
-                            return;
-                        }
-                        deltaPoints[path_index].elements.push(getDelta(srcPoints, trgtPoints));
-                    }
-                }
-
-                var getIncPoints = function (points, deltas) {
-                    var res = [];
-                    for (var i = 0; i < points.length; i++) {
-                        res.push(points[i] + deltas[i]);
-                    }
-                    return res;
-                }
-    
-                var current = source;
-                var transform = function (step) {
-
-                    if (step === 0) {
-                        drawFigure(current, true);
-                        drawFigure(target);
-                        return;
-                    }
-
-                    var next = [];
-                    for (var path_index = 0; path_index < current.length; path_index++) {
-                        curElms = current[path_index].elements;
-                        next.push({});
-                        next[path_index].color = current[path_index].color;
-                        next[path_index].glowEffect = current[path_index].glowEffect;
-                        next[path_index].elements = [];
-                        for (var elm_index = 0; elm_index < curElms.length; elm_index++) {
-                            next[path_index].elements.push({});
-                            curElm = next[path_index].elements[elm_index];
-                            curElm.elementType = curElms[elm_index].elementType;
-                            curElm.points = getIncPoints(curElms[elm_index].points,
-                                deltaPoints[path_index].elements[elm_index].delta);
-                        }
-                    }
-                    drawFigure(current, true);
-                    drawFigure(next);
-                    current = next;
-                    setTimeout(function () {
-                        transform(--step);
-                    }, delay);
-                }
-
-                transform(steps);
-            },
-
-            rotate: function (figure, x, y, angle, speed) {
-
-                var steps = Math.floor(fps * speed);
-                var deltaAngle = angle / steps;
-                var currentAngle = 0;
-
-                var goRotate = function (step) {
-                    if (step === 0) return;
-                    currentAngle += deltaAngle;
-                    clearRect(0,0, 600,500);
-                    graphicsRotate(figure, x, y, currentAngle);
-                    setTimeout(function () {
-                        goRotate(--steps);
-                    }, delay);
-                }
-
-                goRotate(steps);
-            }
-        }
-    };
-
-    var animationManager = function(x, y, w, h) {
+    var animator = function(x, y, w, h) {
 
         var FPS = 25;
         var started = false;
         var delay = Math.floor(1000 / FPS);
 
         var motions = [];
+        var staticFigures = [];
 
         var clear = function () {
             clearRect(x, y, w, h);
@@ -443,6 +322,7 @@ var graphics = (function () {
             motions.forEach(function (elem) {
                 elem.move();
             });
+            staticFigures.forEach(drawFigure);
 
             setTimeout(animate, delay);
         };
@@ -474,6 +354,10 @@ var graphics = (function () {
 
             getTransformMotion: function (sourceFigure, targetFigure, inTime) {
                 return getMotion(getTransformationMove(sourceFigure, targetFigure), inTime);
+            },
+
+            addStaticFigure: function (figure) {
+                staticFigures.push(figure);
             }
         };
     }
@@ -491,8 +375,7 @@ var graphics = (function () {
 
         pen: pen(),
 
-        animator: animator(),
-        animationManager: animationManager,
+        animator: animator,
 
         getRandomColorStyle: function () {
             var r = Math.round(Math.random() * 255);
