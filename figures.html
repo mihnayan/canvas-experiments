@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mihnayan experiments with Canvas</title>
+</head>
+<body>
+    <canvas id="cnv" width="1024" height="768"></canvas>
+    <script type="text/javascript" src="mihnayan.graphic.js"></script>
+    <script type="text/javascript">
+        var leg = [
+            {
+                "color": {"r": 0x96, "g": 0x4B, "b": 0x95},
+                "glowEffect": true,
+                "fillStyle": "#fff",
+                "elements": [
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [146,180, 179,133, 213,133]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [213,133, 231,133, 231,149]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [231,149, 231,164, 184,189]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [184,189, 205,218, 205,245]
+                    },
+                    {
+                        "elementType": "line",
+                        "points": [205,245, 217,258]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [217,258, 223,267, 213,272]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [213,272, 198,277, 185,286]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [185,286, 179,290, 164,290]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [164,290, 155,288, 163,284]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [163,284, 181,276, 186,265]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [186,265, 186,231, 154,200]
+                    },
+                    {
+                        "elementType": "quadraticCurve",
+                        "points": [154,200, 141,188, 146,180]
+                    }       
+                ]
+            }
+        ];
+
+        var eyeball = [
+            {
+                "color": {"r": 0xE6, "g": 0, "b": 0},
+                "glowEffect": true,
+                "elements": [
+                    {
+                        "elementType": "arc",
+                        "points": [209,146, 39, 0,2*Math.PI]
+                    }
+                ]
+            }
+        ];
+
+        var arc = [
+            {
+                "color": {"r": 0, "g": 0, "b": 0xff},
+                "elements": [
+                    {
+                        "elementType": "arc",
+                        "points": [500,300, 50, 0.95*Math.PI,0.6*Math.PI]
+                    }
+                ]
+            }
+        ]
+
+        var ctx = document.getElementById("cnv").getContext("2d");
+        graphics.init({
+            canvasContext: ctx, 
+            backgroundColor: '#ccc'
+        });
+
+        window.onload = function () {
+            graphics.drawFigure(leg);
+            graphics.drawFigure(eyeball);
+            graphics.drawFigure(arc);
+        };
+        
+    </script>
+</body>
+</html>
