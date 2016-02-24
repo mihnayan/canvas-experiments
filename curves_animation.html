@@ -6,6 +6,28 @@
 <body>
     <canvas id="cnv" width="1024" height="768"></canvas>
     <script type="text/javascript" src="mihnayan.graphic.js"></script>
-    <script type="text/javascript" src="curves_animation.js"></script>
+    <script type="text/javascript" src="figures.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var ctx = document.getElementById("cnv").getContext("2d");
+            graphics.init({
+                canvasContext: ctx, 
+                backgroundColor: '#000'
+            });
+
+            var am = graphics.animator(0,0, 400,400);
+            var fishTransformMotion = am.getTransformMotion(fish, mouth, 8000);
+            am.addMotion(fishTransformMotion);
+
+            am.addStaticFigure(eyeball);
+
+            var legRotateMotion = am.getRotateMotion(leg, 210, 150, -720, 8000);
+            am.addMotion(legRotateMotion);
+
+            setTimeout(am.start, 2000);
+            setTimeout(legRotateMotion.pause, 7000);
+            setTimeout(legRotateMotion.start, 10000);
+        }
+    </script>
 </body>
 </html>

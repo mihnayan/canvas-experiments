@@ -42,18 +42,18 @@ var graphics = (function () {
 
     var copyFigure = function (figure) {
         var newFigure = figure.map(function (path) {
-            return {
+            var pathCopy = {
                 color: {r: path.color.r, g: path.color.g, b: path.color.b},
-                glowEffect: path.glowEffect,
                 elements: path.elements.map(function (elem) {
                     return {
                         elementType: elem.elementType,
-                        points: elem.points.map(function (point) {
-                            return point;
-                        })
+                        points: elem.points.slice()
                     };
                 })
             };
+            if (path.glowEffect) pathCopy.glowEffect = path.glowEffect;
+            if (path.fillStyle) pathCopy.fillStyle = path.fillStyle;
+            return pathCopy;
         });
         return newFigure;
     };
@@ -83,20 +83,25 @@ var graphics = (function () {
                 ctx.moveTo(points[0], points[1]);
                 ctx.quadraticCurveTo(points[2], points[3], points[4], points[5]);
             },
+            quadraticCurveTo: function (points) {
+                ctx.quadraticCurveTo(points[0], points[1], points[2], points[3]);
+            },
             arc: function (points) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4]);
             },
             line: function (points) {
                 ctx.moveTo(points[0], points[1]);
                 ctx.lineTo(points[2], points[3]);
+            },
+            lineTo: function (points) {
+                ctx.lineTo(points[0], points[1]);
             }
         };
 
         var drawElements = function (elements) {
-            for (var i = 0; i < elements.length; i++) {
-                var element = elements[i];
-                drawElement[element.elementType](element.points);
-            }
+            elements.forEach(function (elem) {
+                drawElement[elem.elementType](elem.points);
+            });
         }
 
         var drawPath = function (path) {
@@ -105,6 +110,11 @@ var graphics = (function () {
             ctx.lineWidth = 1;
             drawElements(path.elements);
             ctx.stroke();
+            if (path.fillStyle) {
+                ctx.closePath();
+                ctx.fillStyle = path.fillStyle;
+                ctx.fill();
+            }
         }
 
         var drawGlowPath = function (path) {
@@ -112,14 +122,11 @@ var graphics = (function () {
                 ctx.beginPath();
                 ctx.lineCap = 'round';
                 ctx.lineWidth = (i * 2) + 1;
-                if (i === 0) {
-                    ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
-                } else {
-                    ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
-                }
+                ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
                 drawElements(path.elements);
                 ctx.stroke();
             }
+            drawPath(path);
             ctx.lineCap = 'butt';
         };
 
@@ -133,10 +140,9 @@ var graphics = (function () {
             ctx.lineCap = 'butt';
         }
 
-        for (var i = 0; i < figure.length; i++) {
-            var path = figure[i];
-            clear ? clearPath(path) : drawGlowPath(path);
-        }
+        figure.forEach(function (path) {
+            path.glowEffect ? drawGlowPath(path) : drawPath(path);
+        })
     };
 
     var clearRect = function (x, y, w, h) {
@@ -254,10 +260,9 @@ var graphics = (function () {
                                 + path_indx +": elements must contain same number of points");
                         }
 
-                        workElem.srcPoints = [];
+                        workElem.srcPoints = workElem.points.slice();
                         workElem.deltas = [];
                         workPoints.forEach(function (point, i) {
-                            workElem.srcPoints.push(point);
                             workElem.deltas.push(trgPoints[i] - point);
                         })
                     }
