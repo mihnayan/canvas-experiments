@@ -16,20 +16,74 @@
 
         var arc = [
             {
-                "color": {"r": 0, "g": 0, "b": 0xff},
-                "elements": [
+                color: {r: 0, g: 0, b: 0xff},
+                elements: [
                     {
-                        "elementType": "arc",
-                        "points": [500,300, 50, 0.95*Math.PI,0.6*Math.PI]
+                        elementType: "arc",
+                        points: [500,300, 50, 0.95*Math.PI,0.6*Math.PI]
+                    }
+                ]
+            }
+        ];
+
+        var filledGreenCircle = [
+            {
+                color: {r: 0, g: 0xff, b: 0},
+                fillStyle: "#0f0",
+                elements: [
+                    {
+                        elementType: "circle",
+                        points: [600,150, 55]
+                    }
+                ]
+            }
+        ];
+
+        var circleWithTangents = [
+            {
+                color: {r: 0xff, g: 0x45, b: 0},
+                elements: [
+                    {
+                        elementType: "line",
+                        points: [680,200, 650,250]
+                    },
+                    {
+                        elementType: "lineTo",
+                        points: [620,300]
+                    }
+                ]
+            },
+            {
+                color: {r: 0xff, g: 0x45, b: 0},
+                elements: [
+                    {
+                        elementType: "line",
+                        points: [760,250, 730,300]
+                    },
+                    {
+                        elementType: "lineTo",
+                        points: [700,350]
+                    }
+                ]
+            },
+            {
+                color: {r: 0xff, g: 0x45, b: 0},
+                elements: [
+                    {
+                        elementType: "circleBy2Points",
+                        points: [650,250, 730,300]
                     }
                 ]
             }
         ];
 
         window.onload = function () {
+            graphics.drawFigure(fish);
             graphics.drawFigure(eyeball);
             graphics.drawFigure(leg);
             graphics.drawFigure(arc);
+            graphics.drawFigure(filledGreenCircle);
+            graphics.drawFigure(circleWithTangents);
         };
         
     </script>

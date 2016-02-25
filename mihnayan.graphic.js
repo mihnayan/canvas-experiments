@@ -95,6 +95,16 @@ var graphics = (function () {
             },
             lineTo: function (points) {
                 ctx.lineTo(points[0], points[1]);
+            },
+            circle: function (points) {
+                ctx.arc(points[0], points[1], points[2], 0, 2*Math.PI);
+            },
+            circleBy2Points: function (points) {
+                var x0 = (points[0] + points[2]) / 2;
+                var y0 = (points[1] + points[3]) / 2;
+                var r = 0.5 * Math.sqrt(
+                    Math.pow((points[2] - points[0]), 2) + Math.pow((points[3] - points[1]), 2));
+                ctx.arc(x0, y0, r, 0, 2*Math.PI);
             }
         };
 

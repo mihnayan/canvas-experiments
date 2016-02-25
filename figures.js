@@ -164,8 +164,8 @@ var eyeball = [
         glowEffect: true,
         elements: [
             {
-                elementType: "arc",
-                points: [209,146, 39, 0.95*Math.PI,0.6*Math.PI]
+                elementType: "circleBy2Points",
+                points: [225,111, 187,181]
             }
         ]
     }
