@@ -375,6 +375,64 @@ var graphics = (function () {
                 staticFigures.push(figure);
             }
         };
+    };
+
+    var eventManager = function () {
+        var eCanvas = document.createElement('canvas');
+        var eCtx = eCanvas.getContext('2d');
+
+        eCanvas.height = ctx.canvas.height;
+        eCanvas.width = ctx.canvas.width;
+
+        var _observedFigures = [];
+
+        var _callbacks = {
+            'mousemove': [],
+            'onclick': []
+        };
+
+        var colorObjById = function (id) {
+            return {
+                r: (id >> 16) & 255,
+                g: (id >> 8) & 255,
+                b: id & 255
+            }
+        };
+
+        var idByImageData = function (color) {
+
+        };
+
+        ctx.canvas.addEventListener('mousemove', function (evnt) {
+            var x = evnt.clientX;
+            var y = evnt.clientY;
+            var figureId = idByImageData(eCtx.imageData(x, y, 1, 1));
+            if (figureId) {
+                var callback = _callbacks.mousemove[figureId];
+                if (typeof callback === 'function') callback();
+            }
+        });
+
+        var addEvent = function (figureId, eventName, callback) {
+            if (_callbacks[eventName]) {
+                _callbacks[eventName][figureId] = callback;
+            }
+        }
+
+        return {
+            addOservedFigure: function (figure) {
+                var figureId = _observedFigures.length;
+                _observedFigures.push(figure);
+                var eFigure = copyFigure(figure);
+                return _observedFigures.length - 1;
+            },
+            addFigureEvent: function (figureId, eventName, callback) {
+                addEvent(figureId, eventName, callback);
+            },
+            deleteEvent: function (figureId, eventName) {
+                addEvent(figureId, eventName, null);
+            }
+        }
     }
 
     return {
