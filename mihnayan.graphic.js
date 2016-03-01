@@ -57,10 +57,10 @@ var graphics = (function () {
         });
         return newFigure;
     };
-    
-    var drawFigure = function (figure, clear) {
-    
-        var drawElement = {
+
+    var drawElement = function (element) {
+
+        var drawFunctions = {
             curveByPoints: function (points) {
                 var p_len = points.length;
                 if (p_len < 4) return;
@@ -108,17 +108,16 @@ var graphics = (function () {
             }
         };
 
-        var drawElements = function (elements) {
-            elements.forEach(function (elem) {
-                drawElement[elem.elementType](elem.points);
-            });
-        }
+        drawFunctions[element.elementType](element.points);
+    };
+    
+    var drawFigure = function (figure) {
 
         var drawPath = function (path) {
             ctx.beginPath();
             ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
             ctx.lineWidth = 1;
-            drawElements(path.elements);
+            path.elements.forEach(drawElement);
             ctx.stroke();
             if (path.fillStyle) {
                 ctx.closePath();
@@ -133,22 +132,12 @@ var graphics = (function () {
                 ctx.lineCap = 'round';
                 ctx.lineWidth = (i * 2) + 1;
                 ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
-                drawElements(path.elements);
+                path.elements.forEach(drawElement);
                 ctx.stroke();
             }
             drawPath(path);
             ctx.lineCap = 'butt';
         };
-
-        var clearPath = function (path) {
-            ctx.beginPath();
-            ctx.strokeStyle = backgroundColor;
-            ctx.lineWidth = 30;
-            ctx.lineCap = 'square';
-            drawElements(path.elements);
-            ctx.stroke();
-            ctx.lineCap = 'butt';
-        }
 
         figure.forEach(function (path) {
             path.glowEffect ? drawGlowPath(path) : drawPath(path);
