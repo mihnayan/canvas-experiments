@@ -58,66 +58,72 @@ var graphics = (function () {
         return newFigure;
     };
 
-    var drawElement = function (element) {
+    var getElementDrawer = function (context) {
 
         var drawFunctions = {
             curveByPoints: function (points) {
                 var p_len = points.length;
                 if (p_len < 4) return;
 
-                ctx.moveTo(points[0], points[1]);
+                context.moveTo(points[0], points[1]);
                 if (p_len < 6) {
-                    ctx.lineTo(points[2], points[3]);
+                    context.lineTo(points[2], points[3]);
                     return;
                 }
 
                 for (var i = 2; i < p_len - 4; i += 2) {
                     var xc = (points[i] + points[i + 2]) / 2;
                     var yc = (points[i + 1] + points[i + 3]) / 2;
-                    ctx.quadraticCurveTo(points[i], points[i + 1], xc, yc);
+                    context.quadraticCurveTo(points[i], points[i + 1], xc, yc);
                 }
  
-                ctx.quadraticCurveTo(points[i], points[i + 1], points[i + 2], points[i + 3]);
+                context.quadraticCurveTo(points[i], points[i + 1], points[i + 2], points[i + 3]);
             },
             quadraticCurve: function (points) {
-                ctx.moveTo(points[0], points[1]);
-                ctx.quadraticCurveTo(points[2], points[3], points[4], points[5]);
+                context.moveTo(points[0], points[1]);
+                context.quadraticCurveTo(points[2], points[3], points[4], points[5]);
             },
             quadraticCurveTo: function (points) {
-                ctx.quadraticCurveTo(points[0], points[1], points[2], points[3]);
+                context.quadraticCurveTo(points[0], points[1], points[2], points[3]);
             },
             arc: function (points) {
-                ctx.arc(points[0], points[1], points[2], points[3], points[4]);
+                context.arc(points[0], points[1], points[2], points[3], points[4]);
             },
             line: function (points) {
-                ctx.moveTo(points[0], points[1]);
-                ctx.lineTo(points[2], points[3]);
+                context.moveTo(points[0], points[1]);
+                context.lineTo(points[2], points[3]);
             },
             lineTo: function (points) {
-                ctx.lineTo(points[0], points[1]);
+                context.lineTo(points[0], points[1]);
             },
             circle: function (points) {
-                ctx.arc(points[0], points[1], points[2], 0, 2*Math.PI);
+                context.arc(points[0], points[1], points[2], 0, 2*Math.PI);
             },
             circleBy2Points: function (points) {
                 var x0 = (points[0] + points[2]) / 2;
                 var y0 = (points[1] + points[3]) / 2;
                 var r = 0.5 * Math.sqrt(
                     Math.pow((points[2] - points[0]), 2) + Math.pow((points[3] - points[1]), 2));
-                ctx.arc(x0, y0, r, 0, 2*Math.PI);
+                context.arc(x0, y0, r, 0, 2*Math.PI);
             }
         };
 
-        drawFunctions[element.elementType](element.points);
+        return {
+            draw: function (element) {
+                drawFunctions[element.elementType](element.points);
+            }
+        }
     };
     
     var drawFigure = function (figure) {
+
+        var elementDrawer = getElementDrawer(ctx);
 
         var drawPath = function (path) {
             ctx.beginPath();
             ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
             ctx.lineWidth = 1;
-            path.elements.forEach(drawElement);
+            path.elements.forEach(elementDrawer.draw);
             ctx.stroke();
             if (path.fillStyle) {
                 ctx.closePath();
@@ -132,7 +138,7 @@ var graphics = (function () {
                 ctx.lineCap = 'round';
                 ctx.lineWidth = (i * 2) + 1;
                 ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
-                path.elements.forEach(drawElement);
+                path.elements.forEach(elementDrawer.draw);
                 ctx.stroke();
             }
             drawPath(path);
@@ -141,7 +147,7 @@ var graphics = (function () {
 
         figure.forEach(function (path) {
             path.glowEffect ? drawGlowPath(path) : drawPath(path);
-        })
+        });
     };
 
     var clearRect = function (x, y, w, h) {
@@ -366,12 +372,18 @@ var graphics = (function () {
         };
     };
 
-    var eventManager = function () {
-        var eCanvas = document.createElement('canvas');
-        var eCtx = eCanvas.getContext('2d');
+    var eventManager = function (debugMode) {
+        var eventCanvas = document.createElement('canvas');
+        var eventCtx = eventCanvas.getContext('2d');
 
-        eCanvas.height = ctx.canvas.height;
-        eCanvas.width = ctx.canvas.width;
+        eventCanvas.height = ctx.canvas.height;
+        eventCanvas.width = ctx.canvas.width;
+
+        if (debugMode) {
+            document.getElementsByTagName('body')[0].appendChild(eventCanvas);
+        }
+
+        var _id = 0;
 
         var _observedFigures = [];
 
@@ -380,40 +392,68 @@ var graphics = (function () {
             'onclick': []
         };
 
-        var colorObjById = function (id) {
-            return {
-                r: (id >> 16) & 255,
-                g: (id >> 8) & 255,
-                b: id & 255
-            }
+        var getRGBStringById = function (id) {
+            var r = (id >> 16) & 255;
+            var g = (id >> 8) & 255;
+            var b = id & 255;
+            return getRGBString(r, g, b);
         };
 
-        var idByImageData = function (color) {
-
+        var idByImageData = function (imageData) {
+            return (imageData.data[0] << 16) + (imageData.data[1] << 8) + imageData.data[2];
         };
 
         ctx.canvas.addEventListener('mousemove', function (evnt) {
             var x = evnt.clientX;
             var y = evnt.clientY;
-            var figureId = idByImageData(eCtx.imageData(x, y, 1, 1));
-            if (figureId) {
-                var callback = _callbacks.mousemove[figureId];
-                if (typeof callback === 'function') callback();
-            }
+            var id = idByImageData(eventCtx.getImageData(x, y, 1, 1));
+            console.log(id);
+            var callback = _callbacks.mousemove[id];
+            if (callback && (typeof callback === 'function')) callback();
         });
 
         var addEvent = function (figureId, eventName, callback) {
             if (_callbacks[eventName]) {
                 _callbacks[eventName][figureId] = callback;
             }
-        }
+        };
+
+        var drawObservedFigures = function () {
+
+            var elementDrawer = getElementDrawer(eventCtx);
+
+            var drawPath = function (path, rgbString) {
+                eventCtx.beginPath();
+                eventCtx.strokeStyle = rgbString;
+                eventCtx.lineWidth = 2;
+                path.elements.forEach(elementDrawer.draw);
+                eventCtx.stroke();
+                eventCtx.closePath();
+                eventCtx.fillStyle = rgbString;
+                eventCtx.fill();
+            }
+
+            eventCtx.clearRect(0,0, eventCanvas.width, eventCanvas.height);
+
+            _observedFigures.forEach(function (figure, id) {
+                if (figure) {
+                    figure.forEach(function (path) {
+                        drawPath(path, getRGBStringById(id));
+                    });
+                }
+            });
+        };
 
         return {
-            addOservedFigure: function (figure) {
-                var figureId = _observedFigures.length;
-                _observedFigures.push(figure);
-                var eFigure = copyFigure(figure);
-                return _observedFigures.length - 1;
+            addObservedFigure: function (figure) {
+                _id++;
+                _observedFigures[_id] = copyFigure(figure);
+                drawObservedFigures();
+                return _id;
+            },
+            deleteObservedFigure: function (figureId) {
+                _observedFigures[figureId] = null;
+                drawObservedFigures();
             },
             addFigureEvent: function (figureId, eventName, callback) {
                 addEvent(figureId, eventName, callback);
@@ -450,7 +490,9 @@ var graphics = (function () {
 
         copyFigure: copyFigure,
 
-        rotate: rotate
+        rotate: rotate,
+
+        getEventManager: eventManager
     };
     
 })();
