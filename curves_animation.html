@@ -29,7 +29,8 @@
             var fishTransformMotion = am.getTransformMotion(fish, mouth, 8000);
             am.addMotion(fishTransformMotion);
 
-            am.addStaticFigure(eyeball);
+            var eyeballStatic = am.getStaticMotion(eyeball);
+            am.addMotion(eyeballStatic);
 
             var legRotateMotion = am.getRotateMotion(leg, 210, 150, -720, 8000);
             am.addMotion(legRotateMotion);

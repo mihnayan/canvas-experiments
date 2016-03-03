@@ -214,7 +214,6 @@ var graphics = (function () {
         var delay = Math.floor(1000 / FPS);
 
         var motions = [];
-        var staticFigures = [];
 
         var clear = function () {
             clearRect(x, y, w, h);
@@ -229,63 +228,70 @@ var graphics = (function () {
 
         var getTransformationMove = function (source, target) {
 
-                var errorFunc = function (msg) {
-                    return function () {
-                        console.log(msg);
-                    }
+            var errorFunc = function (msg) {
+                return function () {
+                    console.log(msg);
+                }
+            }
+
+            if (source.length !== target.length) {
+                return errorFunc("Can't transform figure: source and target figure must contain the same number of paths");
+            }
+
+            var workFigure = copyFigure(source);
+
+            for (var path_indx = 0; path_indx < workFigure.length; path_indx++) {
+                var workPath = workFigure[path_indx];
+                var trgPath = target[path_indx];
+                if (workPath.elements.length !== trgPath.elements.length) {
+                    return errorFunc("Can't transform figure: figures must same number of elements in path #" 
+                        + path_indx);
                 }
 
-                if (source.length !== target.length) {
-                    return errorFunc("Can't transform figure: source and target figure must contain the same number of paths");
-                }
-
-                var workFigure = copyFigure(source);
-
-                for (var path_indx = 0; path_indx < workFigure.length; path_indx++) {
-                    var workPath = workFigure[path_indx];
-                    var trgPath = target[path_indx];
-                    if (workPath.elements.length !== trgPath.elements.length) {
-                        return errorFunc("Can't transform figure: figures must same number of elements in path #" 
-                            + path_indx);
+                for (var elem_indx = 0; elem_indx < workPath.elements.length; elem_indx++) {
+                    var workElem = workPath.elements[elem_indx];
+                    var trgElem = trgPath.elements[elem_indx];
+                    if (workElem.elementType !== trgElem.elementType) {
+                        return errorFunc("Can't transform element type \"" 
+                            + workElem.elementType
+                            + "\" to \"" + trgtElem.elementType + "\" in path #"
+                            + path_indx + "element #" + elem_indx);
+                    }
+                    var workPoints = workElem.points;
+                    var trgPoints = trgElem.points;
+                    if (workPoints.length !== trgPoints.length) {
+                        return errorFunc("Can't transform element #" + elem_indx + " in path #"
+                            + path_indx +": elements must contain same number of points");
                     }
 
-                    for (var elem_indx = 0; elem_indx < workPath.elements.length; elem_indx++) {
-                        var workElem = workPath.elements[elem_indx];
-                        var trgElem = trgPath.elements[elem_indx];
-                        if (workElem.elementType !== trgElem.elementType) {
-                            return errorFunc("Can't transform element type \"" 
-                                + workElem.elementType
-                                + "\" to \"" + trgtElem.elementType + "\" in path #"
-                                + path_indx + "element #" + elem_indx);
-                        }
-                        var workPoints = workElem.points;
-                        var trgPoints = trgElem.points;
-                        if (workPoints.length !== trgPoints.length) {
-                            return errorFunc("Can't transform element #" + elem_indx + " in path #"
-                                + path_indx +": elements must contain same number of points");
-                        }
-
-                        workElem.srcPoints = workElem.points.slice();
-                        workElem.deltas = [];
-                        workPoints.forEach(function (point, i) {
-                            workElem.deltas.push(trgPoints[i] - point);
-                        })
-                    }
-                }
-    
-                return function (diff) {
-
-                    workFigure.forEach(function (path) {
-                        path.elements.forEach(function (elem) {
-                            elem.srcPoints.forEach(function (point, i) {
-                                elem.points[i] = point + elem.deltas[i] * diff;
-                            })
-                        })
+                    workElem.srcPoints = workElem.points.slice();
+                    workElem.deltas = [];
+                    workPoints.forEach(function (point, i) {
+                        workElem.deltas.push(trgPoints[i] - point);
                     });
-                    drawFigure(workFigure);
                 }
+            }
+    
+            return function (diff) {
 
-            };
+                workFigure.forEach(function (path) {
+                    path.elements.forEach(function (elem) {
+                        elem.srcPoints.forEach(function (point, i) {
+                            elem.points[i] = point + elem.deltas[i] * diff;
+                        })
+                    })
+                });
+                drawFigure(workFigure);
+            }
+
+        };
+
+        var getStatic = function (figure) {
+
+            return function (diff) {
+                drawFigure(figure);
+            }
+        }
 
         var getMotion = function (move, inTime) {
 
@@ -332,7 +338,6 @@ var graphics = (function () {
             motions.forEach(function (elem) {
                 elem.move();
             });
-            staticFigures.forEach(drawFigure);
 
             setTimeout(animate, delay);
         };
@@ -366,8 +371,8 @@ var graphics = (function () {
                 return getMotion(getTransformationMove(sourceFigure, targetFigure), inTime);
             },
 
-            addStaticFigure: function (figure) {
-                staticFigures.push(figure);
+            getStaticMotion: function (figure) {
+                return getMotion(getStatic(figure));
             }
         };
     };
