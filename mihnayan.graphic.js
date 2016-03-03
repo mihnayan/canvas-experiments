@@ -389,7 +389,7 @@ var graphics = (function () {
 
         var _callbacks = {
             'mousemove': [],
-            'onclick': []
+            'click': []
         };
 
         var getRGBStringById = function (id) {
@@ -403,13 +403,20 @@ var graphics = (function () {
             return (imageData.data[0] << 16) + (imageData.data[1] << 8) + imageData.data[2];
         };
 
-        ctx.canvas.addEventListener('mousemove', function (evnt) {
-            var x = evnt.clientX;
-            var y = evnt.clientY;
+        var runEventAction = function (eventName, eventObject) {
+            var x = eventObject.clientX;
+            var y = eventObject.clientY;
             var id = idByImageData(eventCtx.getImageData(x, y, 1, 1));
-            console.log(id);
-            var callback = _callbacks.mousemove[id];
+            var callback = _callbacks[eventName][id];
             if (callback && (typeof callback === 'function')) callback();
+        }
+
+        ctx.canvas.addEventListener('mousemove', function (evnt) {
+           runEventAction('mousemove', evnt);
+        });
+
+        ctx.canvas.addEventListener('click', function (evnt) {
+            runEventAction('click', evnt);
         });
 
         var addEvent = function (figureId, eventName, callback) {

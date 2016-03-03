@@ -20,7 +20,10 @@
             console.log(eyeballId);
             eventManager.addFigureEvent(eyeballId, 'mousemove', function () {
                 console.log('move');
-            })
+            });
+            eventManager.addFigureEvent(eyeballId, 'click', function () {
+                alert('click');
+            });
 
             var am = graphics.animator(0,0, 400,400);
             var fishTransformMotion = am.getTransformMotion(fish, mouth, 8000);
