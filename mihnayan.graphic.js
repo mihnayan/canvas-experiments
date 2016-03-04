@@ -332,6 +332,11 @@ var graphics = (function () {
                     paused = true;
                     started = false;
                 },
+                repeat: function () {
+                    if (!ended) return;
+                    ended = started = false;
+                    this.start();
+                },
                 move: function () {
                     if (!started) return;
                     var diff = 1;
@@ -345,7 +350,7 @@ var graphics = (function () {
                             diff = (inTime + now - stopTime) / inTime
                         } else {
                             ended = true;
-                            if (typeof this.onEnd === 'function') this.onEnd();
+                            if (typeof this.onEnd === 'function') this.onEnd(this);
                         }
                     }
                     motion.doStep(diff);
