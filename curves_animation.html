@@ -15,31 +15,37 @@
                 backgroundColor: '#000'
             });
 
-            var eventManager = graphics.getEventManager();
-            var eyeballId = eventManager.addObservedFigure(eyeball);
-            console.log(eyeballId);
-            eventManager.addFigureEvent(eyeballId, 'mousemove', function () {
-                console.log('move');
-            });
-            eventManager.addFigureEvent(eyeballId, 'click', function () {
-                alert('click');
-            });
-
             var am = graphics.animator(0,0, 400,400);
-            var fishTransformMotion = am.getTransformMotion(fish, mouth, 8000);
-            am.addMotion(fishTransformMotion);
 
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
 
-            var legRotateMotion = am.getRotateMotion(leg, 210, 150, -720, 8000);
+            var fishTransformMotion = am.getTransformMotion(fish, mouth, 3000);
+            am.addMotion(fishTransformMotion);
+            fishTransformMotion.pause();
+
+            var legRotateMotion = am.getRotateMotion(leg, 210, 150, -1440, 16000);
             am.addMotion(legRotateMotion);
+
+            var eventManager = graphics.getEventManager();
+
+            var fishId = eventManager.addObservedFigure(fish);
+            eventManager.addFigureEvent(fishId, 'mousemove', function () {
+                fishTransformMotion.resume();
+            });
+
+            var eyeballId = eventManager.addObservedFigure(eyeball);
+            eventManager.addFigureEvent(eyeballId, 'click', function () {
+                var leg1 = graphics.copyFigure(leg);
+                var leg1RotateMotion = am.getRotateMotion(leg1, 210, 150, -14400, 100000);
+                am.addMotion(leg1RotateMotion);
+                leg1RotateMotion.start();
+            });
 
             am.start();
 
-            // setTimeout(am.start, 2000);
-            // setTimeout(legRotateMotion.pause, 7000);
-            // setTimeout(legRotateMotion.start, 10000);
+            setTimeout(legRotateMotion.pause, 7000);
+            setTimeout(legRotateMotion.resume, 10000);
         }
     </script>
 </body>

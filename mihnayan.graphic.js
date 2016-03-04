@@ -221,8 +221,13 @@ var graphics = (function () {
 
         var getRotationMove = function (figure, x, y, angle) {
 
-            return function (diff) {
-                rotate(figure, x, y, angle * diff);
+            return {
+                init: function () {
+                    drawFigure(figure);
+                },
+                doStep: function (diff) {
+                    rotate(figure, x, y, angle * diff);
+                }
             }
         };
 
@@ -272,44 +277,56 @@ var graphics = (function () {
                 }
             }
     
-            return function (diff) {
-
-                workFigure.forEach(function (path) {
-                    path.elements.forEach(function (elem) {
-                        elem.srcPoints.forEach(function (point, i) {
-                            elem.points[i] = point + elem.deltas[i] * diff;
+            return {
+                init: function () {
+                    drawFigure(source);
+                },
+                doStep: function (diff) {
+                    workFigure.forEach(function (path) {
+                        path.elements.forEach(function (elem) {
+                            elem.srcPoints.forEach(function (point, i) {
+                                elem.points[i] = point + elem.deltas[i] * diff;
+                            })
                         })
-                    })
-                });
-                drawFigure(workFigure);
+                    });
+                    drawFigure(workFigure);
+                }
             }
 
         };
 
         var getStatic = function (figure) {
 
-            return function (diff) {
-                drawFigure(figure);
+            return {
+                init: function () {
+                    drawFigure(figure);
+                },
+                doStep: function (diff) {
+                    drawFigure(figure);
+                }
             }
         }
 
-        var getMotion = function (move, inTime) {
+        var getMotion = function (motion, inTime) {
 
-            var paused = true;
+            var paused = false;
             var started = false;
 
             var stopTime;
             var lastTime;
 
             return {
+                init: function () {
+                    motion.init();
+                },
                 start: function () {
-                    paused = false;
                     if (started) return;
                     started = true;
                     lastTime = Date.now();
                     stopTime = inTime + lastTime;
                 },
                 pause: function () { paused = true; },
+                resume: function () { paused = false; },
                 stop: function () {
                     paused = true;
                     started = false;
@@ -325,7 +342,7 @@ var graphics = (function () {
                     if (now < stopTime) {
                         diff = (inTime + now - stopTime) / inTime
                     }
-                    move(diff);
+                    motion.doStep(diff);
                 }
             };
         };
@@ -360,6 +377,7 @@ var graphics = (function () {
             },
 
             addMotion: function (motion) {
+                motion.init();
                 motions.push(motion);
             },
 
