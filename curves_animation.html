@@ -8,6 +8,11 @@
     <script type="text/javascript" src="mihnayan.graphic.js"></script>
     <script type="text/javascript" src="figures.js"></script>
     <script type="text/javascript">
+        var settings = {
+            maxNumberOfLegs: 4
+        }
+    </script>
+    <script type="text/javascript">
         window.onload = function () {
             var ctx = document.getElementById("cnv").getContext("2d");
             graphics.init({
@@ -16,6 +21,9 @@
             });
 
             var am = graphics.animator(0,0, 400,400);
+            var eventManager = graphics.getEventManager();
+
+            var currentNumberOfLegs = 1;
 
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
@@ -26,8 +34,9 @@
 
             var legRotateMotion = am.getRotateMotion(leg, 210, 150, -1440, 16000);
             am.addMotion(legRotateMotion);
-
-            var eventManager = graphics.getEventManager();
+            legRotateMotion.onEnd = function () {
+                console.log("leg rotation ended!");
+            }
 
             var fishId = eventManager.addObservedFigure(fish);
             eventManager.addFigureEvent(fishId, 'mousemove', function () {
@@ -36,10 +45,12 @@
 
             var eyeballId = eventManager.addObservedFigure(eyeball);
             eventManager.addFigureEvent(eyeballId, 'click', function () {
-                var leg1 = graphics.copyFigure(leg);
-                var leg1RotateMotion = am.getRotateMotion(leg1, 210, 150, -14400, 100000);
-                am.addMotion(leg1RotateMotion);
-                leg1RotateMotion.start();
+                if (currentNumberOfLegs >= settings.maxNumberOfLegs) return;
+                var newLeg = graphics.copyFigure(leg);
+                var newLegRotateMotion = am.getRotateMotion(newLeg, 210, 150, -14400, 100000);
+                am.addMotion(newLegRotateMotion);
+                newLegRotateMotion.start();
+                currentNumberOfLegs++;
             });
 
             am.start();

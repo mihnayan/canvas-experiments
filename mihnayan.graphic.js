@@ -311,9 +311,10 @@ var graphics = (function () {
 
             var paused = false;
             var started = false;
+            var ended = false;
 
-            var stopTime;
-            var lastTime;
+            var stopTime = 0;
+            var lastTime = 0;
 
             return {
                 init: function () {
@@ -333,17 +334,23 @@ var graphics = (function () {
                 },
                 move: function () {
                     if (!started) return;
-                    var now = Date.now();                   
-                    if (paused) {
-                        stopTime += (now - lastTime);
-                    }
-                    lastTime = now;
                     var diff = 1;
-                    if (now < stopTime) {
-                        diff = (inTime + now - stopTime) / inTime
+                    if (!ended) {
+                        var now = Date.now();                   
+                        if (paused) {
+                            stopTime += (now - lastTime);
+                        }
+                        lastTime = now;
+                        if (now < stopTime) {
+                            diff = (inTime + now - stopTime) / inTime
+                        } else {
+                            ended = true;
+                            if (typeof this.onEnd === 'function') this.onEnd();
+                        }
                     }
                     motion.doStep(diff);
-                }
+                },
+                onEnd: function () {}
             };
         };
 
