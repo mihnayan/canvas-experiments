@@ -10,8 +10,8 @@
     <script type="text/javascript">
         var settings = {
             maxNumberOfLegs: 4,
-            maxLegRPM: 2,
-            minLegRPM: 0.5
+            maxLegRPM: 1,
+            minLegRPM: 0.25
         }
     </script>
     <script type="text/javascript">
@@ -30,7 +30,19 @@
             var am = graphics.animator(0,0, 400,400);
             var eventManager = graphics.getEventManager();
 
-            var currentNumberOfLegs = 1;
+            var currentNumberOfLegs = 0;
+            var createLegRotation = function () {
+                if (currentNumberOfLegs >= settings.maxNumberOfLegs) return;
+                var newLeg = graphics.copyFigure(leg);
+                var legRotateMotion = am.getRotateMotion(newLeg, 210, 150, -360*10, 10*getRandomLegRevolutionTime());
+                am.addMotion(legRotateMotion);
+                legRotateMotion.start();
+                legRotateMotion.onEnd = function (motion) {
+                    motion.repeat();
+                }
+                legRotateMotion.start();
+                currentNumberOfLegs++;
+            };
 
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
@@ -39,11 +51,7 @@
             am.addMotion(fishTransformMotion);
             fishTransformMotion.pause();
 
-            var legRotateMotion = am.getRotateMotion(leg, 210, 150, -360*10, 10*getRandomLegRevolutionTime());
-            am.addMotion(legRotateMotion);
-            legRotateMotion.onEnd = function (motion) {
-                motion.repeat();
-            }
+            createLegRotation();
 
             var fishId = eventManager.addObservedFigure(fish);
             eventManager.addFigureEvent(fishId, 'mousemove', function () {
@@ -52,12 +60,7 @@
 
             var eyeballId = eventManager.addObservedFigure(eyeball);
             eventManager.addFigureEvent(eyeballId, 'click', function () {
-                if (currentNumberOfLegs >= settings.maxNumberOfLegs) return;
-                var newLeg = graphics.copyFigure(leg);
-                var newLegRotateMotion = am.getRotateMotion(newLeg, 210, 150, -360*10, 10*getRandomLegRevolutionTime());
-                am.addMotion(newLegRotateMotion);
-                newLegRotateMotion.start();
-                currentNumberOfLegs++;
+                createLegRotation();
             });
 
             am.start();
