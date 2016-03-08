@@ -104,7 +104,6 @@ var leg = [
     {
         color: {r: 0x96, g: 0x4B, b: 0x95},
         glowEffect: true,
-        fillStyle: "#000",
         elements: [
             {
                 elementType: "quadraticCurve",

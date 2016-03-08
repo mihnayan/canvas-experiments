@@ -10,7 +10,7 @@
     <script type="text/javascript">
         var settings = {
             maxNumberOfLegs: 4,
-            maxLegRPM: 1,
+            maxLegRPM: 0.5,
             minLegRPM: 0.25
         }
     </script>
@@ -44,24 +44,57 @@
                 currentNumberOfLegs++;
             };
 
+            var fishToMouth = function () {
+                var fishTransformMotion = am.getTransformMotion(fish, mouth, 3000);
+                var fishMotionId = am.addMotion(fishTransformMotion);
+                fishTransformMotion.pause();
+                fishTransformMotion.start();
+                var fishId = eventManager.addObservedFigure(fish);
+                eventManager.addFigureEvent(fishId, 'mousemove', function () {
+                    fishTransformMotion.resume();
+                });
+
+                var eyeballId = eventManager.addObservedFigure(eyeball);
+                eventManager.addFigureEvent(eyeballId, 'click', function () {
+                    createLegRotation();
+                });
+
+                fishTransformMotion.onEnd = function (motion) {
+                    eventManager.deleteObservedFigure(eyeballId);
+                    eventManager.deleteObservedFigure(fishId);
+                    am.deleteMotion(fishMotionId);
+                    mouthToFish();
+                }
+            };
+
+            var mouthToFish = function () {
+                var mouthTransformMotion = am.getTransformMotion(mouth, fish, 3000);
+                var mouthMotionId = am.addMotion(mouthTransformMotion);
+                mouthTransformMotion.pause();
+                mouthTransformMotion.start();
+                var mouthId = eventManager.addObservedFigure(mouth);
+                eventManager.addFigureEvent(mouthId, 'mousemove', function () {
+                    mouthTransformMotion.resume();
+                });
+
+                var eyeballId = eventManager.addObservedFigure(eyeball);
+                eventManager.addFigureEvent(eyeballId, 'click', function () {
+                    createLegRotation();
+                });
+
+                mouthTransformMotion.onEnd = function (motion) {
+                    eventManager.deleteObservedFigure(eyeballId);
+                    eventManager.deleteObservedFigure(mouthId);
+                    am.deleteMotion(mouthMotionId);
+                    fishToMouth();
+                }
+            };
+
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
 
-            var fishTransformMotion = am.getTransformMotion(fish, mouth, 3000);
-            am.addMotion(fishTransformMotion);
-            fishTransformMotion.pause();
-
+            fishToMouth();
             createLegRotation();
-
-            var fishId = eventManager.addObservedFigure(fish);
-            eventManager.addFigureEvent(fishId, 'mousemove', function () {
-                fishTransformMotion.resume();
-            });
-
-            var eyeballId = eventManager.addObservedFigure(eyeball);
-            eventManager.addFigureEvent(eyeballId, 'click', function () {
-                createLegRotation();
-            });
 
             am.start();
         }

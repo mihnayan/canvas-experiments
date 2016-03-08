@@ -365,7 +365,7 @@ var graphics = (function () {
 
             clear();
             motions.forEach(function (elem) {
-                elem.move();
+                if (elem) elem.move();
             });
 
             setTimeout(animate, delay);
@@ -380,19 +380,20 @@ var graphics = (function () {
                 });
                 animate();
             },
-
             stop: function () {
                 started = false;
                 motions.forEach(function (elem) {
                     elem.stop();
                 });
             },
-
             addMotion: function (motion) {
                 motion.init();
                 motions.push(motion);
+                return motions.length - 1;
             },
-
+            deleteMotion: function (motionId) {
+                motions[motionId] = null;
+            },
             getRotateMotion: function (figure, x, y, angle, inTime) {
                 return getMotion(getRotationMove(figure, x, y, angle), inTime);
             }, 
