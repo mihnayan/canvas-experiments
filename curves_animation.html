@@ -11,7 +11,8 @@
         var settings = {
             maxNumberOfLegs: 4,
             maxLegRPM: 0.5,
-            minLegRPM: 0.25
+            minLegRPM: 0.25,
+            transformationSpeed: 1000, //ms
         }
     </script>
     <script type="text/javascript">
@@ -44,56 +45,38 @@
                 currentNumberOfLegs++;
             };
 
-            var fishToMouth = function () {
-                var fishTransformMotion = am.getTransformMotion(fish, mouth, 3000);
-                var fishMotionId = am.addMotion(fishTransformMotion);
-                fishTransformMotion.pause();
-                fishTransformMotion.start();
-                var fishId = eventManager.addObservedFigure(fish);
-                eventManager.addFigureEvent(fishId, 'mousemove', function () {
-                    fishTransformMotion.resume();
+            var fishToMouthTransformation = function (sourceFigure, targetFigure) {
+                var currentMotion = am.getTransformMotion(sourceFigure, targetFigure, settings.transformationSpeed);
+                var currentMotionId = am.addMotion(currentMotion);
+                currentMotion.pause();
+                currentMotion.start();
+
+                var observedFigureId = eventManager.addObservedFigure(sourceFigure);
+                eventManager.addFigureEvent(observedFigureId, 'mousemove', function () {
+                    currentMotion.resume();
                 });
 
-                var eyeballId = eventManager.addObservedFigure(eyeball);
-                eventManager.addFigureEvent(eyeballId, 'click', function () {
+                var observedEyeballId = eventManager.addObservedFigure(eyeball);
+                eventManager.addFigureEvent(observedEyeballId, 'click', function () {
                     createLegRotation();
                 });
 
-                fishTransformMotion.onEnd = function (motion) {
-                    eventManager.deleteObservedFigure(eyeballId);
-                    eventManager.deleteObservedFigure(fishId);
-                    am.deleteMotion(fishMotionId);
-                    mouthToFish();
+                currentMotion.onEnd = function (motion) {
+                    eventManager.deleteObservedFigure(observedEyeballId);
+                    eventManager.deleteObservedFigure(observedFigureId);
+                    am.deleteMotion(currentMotionId);
+                    if (sourceFigure === fish) {
+                        fishToMouthTransformation(mouth, fish);
+                    } else {
+                        fishToMouthTransformation(fish, mouth);
+                    }
                 }
-            };
-
-            var mouthToFish = function () {
-                var mouthTransformMotion = am.getTransformMotion(mouth, fish, 3000);
-                var mouthMotionId = am.addMotion(mouthTransformMotion);
-                mouthTransformMotion.pause();
-                mouthTransformMotion.start();
-                var mouthId = eventManager.addObservedFigure(mouth);
-                eventManager.addFigureEvent(mouthId, 'mousemove', function () {
-                    mouthTransformMotion.resume();
-                });
-
-                var eyeballId = eventManager.addObservedFigure(eyeball);
-                eventManager.addFigureEvent(eyeballId, 'click', function () {
-                    createLegRotation();
-                });
-
-                mouthTransformMotion.onEnd = function (motion) {
-                    eventManager.deleteObservedFigure(eyeballId);
-                    eventManager.deleteObservedFigure(mouthId);
-                    am.deleteMotion(mouthMotionId);
-                    fishToMouth();
-                }
-            };
+            }
 
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
 
-            fishToMouth();
+            fishToMouthTransformation(fish, mouth);
             createLegRotation();
 
             am.start();
