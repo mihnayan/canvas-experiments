@@ -222,9 +222,6 @@ var graphics = (function () {
         var getRotationMove = function (figure, x, y, angle) {
 
             return {
-                init: function () {
-                    drawFigure(figure);
-                },
                 doStep: function (diff) {
                     rotate(figure, x, y, angle * diff);
                 }
@@ -278,9 +275,6 @@ var graphics = (function () {
             }
     
             return {
-                init: function () {
-                    drawFigure(source);
-                },
                 doStep: function (diff) {
                     workFigure.forEach(function (path) {
                         path.elements.forEach(function (elem) {
@@ -298,9 +292,6 @@ var graphics = (function () {
         var getStatic = function (figure) {
 
             return {
-                init: function () {
-                    drawFigure(figure);
-                },
                 doStep: function (diff) {
                     drawFigure(figure);
                 }
@@ -317,9 +308,6 @@ var graphics = (function () {
             var lastTime = 0;
 
             return {
-                init: function () {
-                    motion.init();
-                },
                 start: function () {
                     if (started) return;
                     started = true;
@@ -387,7 +375,6 @@ var graphics = (function () {
                 });
             },
             addMotion: function (motion) {
-                motion.init();
                 motions.push(motion);
                 return motions.length - 1;
             },
