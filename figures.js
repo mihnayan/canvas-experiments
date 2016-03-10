@@ -157,6 +157,63 @@ var leg = [
     }
 ];
 
+var straight_leg = [
+    {
+        color: {r: 0x96, g: 0x4B, b: 0x95},
+        glowEffect: true,
+        elements: [
+            {
+                elementType: "quadraticCurve",
+                points: [187,211, 179,161, 199,138]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [212,121, 225,139]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [233,150, 218,207]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [230,241, 223,275]
+            },
+            {
+                elementType: "lineTo",
+                points: [231,292]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [234,303, 222,304]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [206,303, 193,307]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [184,310, 169,305]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [160,300, 170,299]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [193,296, 199,286]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [207,257, 194,228]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [187,218, 187,211]
+            }
+        ]
+    }
+];
+
 var eyeball = [
     {
         color: {r: 0xE6, g: 0, b: 0},
