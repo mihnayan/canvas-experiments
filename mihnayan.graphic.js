@@ -213,6 +213,7 @@ var graphics = (function () {
         var started = false;
         var delay = Math.floor(1000 / FPS);
 
+        //TODO: need another method to keep Motions (possible strong growth of the array if frequently deletion/insertion are occurring)
         var motions = [];
 
         var clear = function () {

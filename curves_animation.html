@@ -12,6 +12,7 @@
             maxNumberOfLegs: 4,
             maxLegRPM: 0.5,
             minLegRPM: 0.25,
+            legFlexionSpeed: 1000, //ms
             transformationSpeed: 1000, //ms
         }
     </script>
@@ -32,8 +33,30 @@
             var eventManager = graphics.getEventManager();
 
             var currentNumberOfLegs = 0;
-            var createLegRotation = function () {
+
+            var cyclicLegTransformation = function (phase1, phase2) {
+                var currentPhase = phase1;
+                var currentMotion = am.getTransformMotion(phase1, phase2, settings.legFlexionSpeed);
+                var currentMotionId = am.addMotion(currentMotion);
+                currentMotion.start();
+
+                currentMotion.onEnd = function (motion) {
+                    am.deleteMotion(currentMotionId);
+                    if (currentPhase === phase1) {
+                        cyclicLegTransformation(phase2, phase1);
+                    } else {
+                        cyclicLegTransformation(phase1, phase2);
+                    }
+                }
+            };
+
+            var createLegMoving = function () {
                 if (currentNumberOfLegs >= settings.maxNumberOfLegs) return;
+                currentNumberOfLegs++;
+                if (currentNumberOfLegs === settings.maxNumberOfLegs) {
+                    cyclicLegTransformation(leg, straight_leg);
+                    return;
+                }
                 var newLeg = graphics.copyFigure(leg);
                 var legRotateMotion = am.getRotateMotion(newLeg, 210, 150, -360*10, 10*getRandomLegRevolutionTime());
                 am.addMotion(legRotateMotion);
@@ -42,7 +65,6 @@
                     motion.repeat();
                 }
                 legRotateMotion.start();
-                currentNumberOfLegs++;
             };
 
             var fishToMouthTransformation = function (sourceFigure, targetFigure) {
@@ -58,7 +80,7 @@
 
                 var observedEyeballId = eventManager.addObservedFigure(eyeball);
                 eventManager.addFigureEvent(observedEyeballId, 'click', function () {
-                    createLegRotation();
+                    createLegMoving();
                 });
 
                 currentMotion.onEnd = function (motion) {
@@ -71,13 +93,13 @@
                         fishToMouthTransformation(fish, mouth);
                     }
                 }
-            }
+            };
 
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
 
             fishToMouthTransformation(fish, mouth);
-            createLegRotation();
+            createLegMoving();
 
             am.start();
         }
