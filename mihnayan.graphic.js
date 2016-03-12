@@ -23,7 +23,7 @@ var getColorTransition = function (beginColor, endColor, steps) {
     }
 
     return transition;
-}
+};
 
 var graphics = (function () {
 
@@ -112,7 +112,7 @@ var graphics = (function () {
             draw: function (element) {
                 drawFunctions[element.elementType](element.points);
             }
-        }
+        };
     };
     
     var drawFigure = function (figure) {
@@ -130,7 +130,7 @@ var graphics = (function () {
                 ctx.fillStyle = path.fillStyle;
                 ctx.fill();
             }
-        }
+        };
 
         var drawGlowPath = function (path) {
             for (var i = 5; i >= 0; i--) {
@@ -173,7 +173,7 @@ var graphics = (function () {
         var changePosition = function (x, y) {
             posX = x;
             posY = y;
-        }
+        };
 
         return {
             setStyle: function (strokeStyle) {
@@ -204,7 +204,7 @@ var graphics = (function () {
 
                 changePosition(x, y);
             }
-        }
+        };
     };
 
     var animator = function(x, y, w, h) {
@@ -226,7 +226,7 @@ var graphics = (function () {
                 doStep: function (diff) {
                     rotate(figure, x, y, angle * diff);
                 }
-            }
+            };
         };
 
         var getTransformationMove = function (source, target) {
@@ -234,8 +234,8 @@ var graphics = (function () {
             var errorFunc = function (msg) {
                 return function () {
                     console.log(msg);
-                }
-            }
+                };
+            };
 
             if (source.length !== target.length) {
                 return errorFunc("Can't transform figure: source and target figure must contain the same number of paths");
@@ -257,7 +257,7 @@ var graphics = (function () {
                     if (workElem.elementType !== trgElem.elementType) {
                         return errorFunc("Can't transform element type \"" 
                             + workElem.elementType
-                            + "\" to \"" + trgtElem.elementType + "\" in path #"
+                            + "\" to \"" + trgElem.elementType + "\" in path #"
                             + path_indx + "element #" + elem_indx);
                     }
                     var workPoints = workElem.points;
@@ -281,12 +281,12 @@ var graphics = (function () {
                         path.elements.forEach(function (elem) {
                             elem.srcPoints.forEach(function (point, i) {
                                 elem.points[i] = point + elem.deltas[i] * diff;
-                            })
-                        })
+                            });
+                        });
                     });
                     drawFigure(workFigure);
                 }
-            }
+            };
 
         };
 
@@ -296,8 +296,8 @@ var graphics = (function () {
                 doStep: function (diff) {
                     drawFigure(figure);
                 }
-            }
-        }
+            };
+        };
 
         var getMotion = function (motion, inTime) {
 
@@ -336,7 +336,7 @@ var graphics = (function () {
                         }
                         lastTime = now;
                         if (now < stopTime) {
-                            diff = (inTime + now - stopTime) / inTime
+                            diff = (inTime + now - stopTime) / inTime;
                         } else {
                             ended = true;
                             if (typeof this.onEnd === 'function') this.onEnd(this);
@@ -433,7 +433,7 @@ var graphics = (function () {
             var id = idByImageData(eventCtx.getImageData(x, y, 1, 1));
             var callback = _callbacks[eventName][id];
             if (callback && (typeof callback === 'function')) callback();
-        }
+        };
 
         ctx.canvas.addEventListener('mousemove', function (evnt) {
            runEventAction('mousemove', evnt);
@@ -462,7 +462,7 @@ var graphics = (function () {
                 eventCtx.closePath();
                 eventCtx.fillStyle = rgbString;
                 eventCtx.fill();
-            }
+            };
 
             eventCtx.clearRect(0,0, eventCanvas.width, eventCanvas.height);
 
@@ -492,8 +492,8 @@ var graphics = (function () {
             deleteEvent: function (figureId, eventName) {
                 addEvent(figureId, eventName, null);
             }
-        }
-    }
+        };
+    };
 
     return {
         init: function (params) {
