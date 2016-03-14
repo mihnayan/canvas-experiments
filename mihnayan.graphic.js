@@ -232,8 +232,10 @@ var graphics = (function () {
         var getTransformationMove = function (source, target) {
 
             var errorFunc = function (msg) {
-                return function () {
-                    console.log(msg);
+                return {
+                    doStep: function () {
+                        console.log(msg);
+                    }
                 };
             };
 

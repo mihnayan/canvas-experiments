@@ -11,7 +11,7 @@
         var ctx = document.getElementById("cnv").getContext("2d");
         graphics.init({
             canvasContext: ctx, 
-            backgroundColor: '#ccc'
+            backgroundColor: '#555'
         });
 
         var arc = [
@@ -82,6 +82,7 @@
             graphics.drawFigure(eyeball);
             graphics.drawFigure(leg);
             graphics.drawFigure(straight_leg);
+            graphics.drawFigure(mouth);
             // graphics.drawFigure(arc);
             // graphics.drawFigure(filledGreenCircle);
             // graphics.drawFigure(circleWithTangents);

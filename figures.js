@@ -4,22 +4,28 @@ var mouth = [
         glowEffect: true,
         elements: [
             {
-                elementType: "curveByPoints",
-                points: [85,105, 133,89, 176,83, 204,91, 223,108, 223,108, 239,104, 258,107, 
-                    274,114, 285,123, 295,132, 306,143, 315,152, 324,166, 331,175, 337,184, 337,184,
-                    320,189, 306,193]
+                elementType: "quadraticCurve",
+                points: [85,105, 161,76, 197,87]
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [289,197, 265,198]
+                points: [211,92, 224,107]
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [229,199, 188,188]
+                points: [242,102, 258,107]
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [112,143, 85,105]
+                points: [292,117, 337,184]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [268,206, 190,185]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [136,167, 85,105]
             }
         ]
     },
@@ -55,10 +61,20 @@ var fish = [
         glowEffect: true,
         elements: [
             {
-                elementType: "curveByPoints",
-                points: [111,115, 141,103, 175,99, 203,102, 223,108, 248,120, 269,133, 289,148, 
-                    309,166, 309,166, 319,161, 331,158, 346,157, 361,159, 361,159, 346,173, 339,187,
-                    337,208, 340,224]
+                elementType: "quadraticCurve",
+                points: [111,115, 170,90, 224,108]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [262,120, 309, 166]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [327,153, 361,159]
+            },
+            {
+                elementType: "quadraticCurveTo",
+                points: [325,187, 340,223]
             },
             {
                 elementType: "quadraticCurveTo",
@@ -66,12 +82,8 @@ var fish = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [225,195, 194,184]
+                points: [157,209, 111,115]
             },
-            {
-                elementType: "quadraticCurveTo",
-                points: [118,151, 111,115]
-            }
         ]
     },
     {
