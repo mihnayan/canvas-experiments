@@ -1,4 +1,4 @@
-var mouth = [
+var mouthData = [
     {
         color: {r: 0xEA, g: 0xE3, b: 0},
         glowEffect: true,
@@ -55,7 +55,7 @@ var mouth = [
     }
 ];
 
-var fish = [
+var fishData = [
     {
         color: {r: 0xEA, g: 0xE3, b: 0},
         glowEffect: true,
@@ -112,7 +112,7 @@ var fish = [
     }
 ];
 
-var leg = [
+var legData = [
     {
         color: {r: 0x96, g: 0x4B, b: 0x95},
         glowEffect: true,
@@ -169,7 +169,7 @@ var leg = [
     }
 ];
 
-var straight_leg = [
+var straightLegData = [
     {
         color: {r: 0x96, g: 0x4B, b: 0x95},
         glowEffect: true,
@@ -226,7 +226,7 @@ var straight_leg = [
     }
 ];
 
-var eyeball = [
+var eyeballData = [
     {
         color: {r: 0xE6, g: 0, b: 0},
         glowEffect: true,
@@ -239,7 +239,7 @@ var eyeball = [
     }
 ];
 
-var hat = [
+var hatData = [
     {
         color: {r: 0, g: 0xff, b: 0},
         glowEffect: true,
@@ -316,7 +316,7 @@ var hat = [
     }
 ];
 
-var hatEyeball = [
+var hatEyeballData = [
     {
         color: {r: 0xE6, g: 0, b: 0},
         glowEffect: true,
@@ -329,7 +329,7 @@ var hatEyeball = [
     }
 ];
 
-var hand = [
+var handData = [
     {
         color: {r: 0xff, g: 0xff, b: 0},
         glowEffect: true,

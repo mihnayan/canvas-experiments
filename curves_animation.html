@@ -54,10 +54,12 @@
                 if (currentNumberOfLegs >= settings.maxNumberOfLegs) return;
                 currentNumberOfLegs++;
                 if (currentNumberOfLegs === settings.maxNumberOfLegs) {
-                    cyclicLegTransformation(leg, straight_leg);
+                    var leg = graphics.createFigure(legData);
+                    var straightLeg = graphics.createFigure(straightLegData);
+                    cyclicLegTransformation(leg, straightLeg);
                     return;
                 }
-                var newLeg = graphics.copyFigure(leg);
+                var newLeg = graphics.createFigure(legData);
                 var legRotateMotion = am.getRotateMotion(newLeg, 210, 150, -360*10, 10*getRandomLegRevolutionTime());
                 am.addMotion(legRotateMotion);
                 legRotateMotion.start();
@@ -95,9 +97,12 @@
                 }
             };
 
+            var eyeball = graphics.createFigure(eyeballData);
             var eyeballStatic = am.getStaticMotion(eyeball);
             am.addMotion(eyeballStatic);
 
+            var fish = graphics.createFigure(fishData);
+            var mouth = graphics.createFigure(mouthData);
             fishToMouthTransformation(fish, mouth);
             createLegMoving();
 

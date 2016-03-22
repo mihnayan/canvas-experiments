@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Returns color objects array that represents color transition.
  * Color object is specified in the format { red: 0, green: 0, blue: 0 }.
@@ -38,24 +40,6 @@ var graphics = (function () {
             str = 'rgba(';
         }
         return str + rgb.join(',') + ')';
-    };
-
-    var copyFigure = function (figure) {
-        var newFigure = figure.map(function (path) {
-            var pathCopy = {
-                color: {r: path.color.r, g: path.color.g, b: path.color.b},
-                elements: path.elements.map(function (elem) {
-                    return {
-                        elementType: elem.elementType,
-                        points: elem.points.slice()
-                    };
-                })
-            };
-            if (path.glowEffect) pathCopy.glowEffect = path.glowEffect;
-            if (path.fillStyle) pathCopy.fillStyle = path.fillStyle;
-            return pathCopy;
-        });
-        return newFigure;
     };
 
     var getElementDrawer = function (context) {
@@ -114,54 +98,106 @@ var graphics = (function () {
             }
         };
     };
-    
-    var drawFigure = function (figure) {
 
-        var elementDrawer = getElementDrawer(ctx);
+    var Figure = function (data) {
 
-        var drawPath = function (path) {
-            ctx.beginPath();
-            ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
-            ctx.lineWidth = 1;
-            path.elements.forEach(elementDrawer.draw);
-            ctx.stroke();
-            if (path.fillStyle) {
-                ctx.closePath();
-                ctx.fillStyle = path.fillStyle;
-                ctx.fill();
-            }
+        var rotation = {
+            x: 0,
+            y: 0,
+            angle: 0
         };
 
-        var drawGlowPath = function (path) {
-            for (var i = 5; i >= 0; i--) {
+        var drawData = function () {
+            var elementDrawer = getElementDrawer(ctx);
+
+            var drawPath = function (path) {
                 ctx.beginPath();
-                ctx.lineCap = 'round';
-                ctx.lineWidth = (i * 2) + 1;
-                ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
+                ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b);
+                ctx.lineWidth = 1;
                 path.elements.forEach(elementDrawer.draw);
                 ctx.stroke();
-            }
-            drawPath(path);
-            ctx.lineCap = 'butt';
+                if (path.fillStyle) {
+                    ctx.closePath();
+                    ctx.fillStyle = path.fillStyle;
+                    ctx.fill();
+                }
+            };
+
+            var drawGlowPath = function (path) {
+                for (var i = 5; i >= 0; i--) {
+                    ctx.beginPath();
+                    ctx.lineCap = 'round';
+                    ctx.lineWidth = (i * 2) + 1;
+                    ctx.strokeStyle = getRGBString(path.color.r, path.color.g, path.color.b, 0.07);
+                    path.elements.forEach(elementDrawer.draw);
+                    ctx.stroke();
+                }
+                drawPath(path);
+                ctx.lineCap = 'butt';
+            };
+
+            data.forEach(function (path) {
+                path.glowEffect ? drawGlowPath(path) : drawPath(path);
+            });
+        }
+
+        /**
+         * Returns copy of figure data
+         * @return Figure data in JSON format
+         */
+        this.getData = function() {
+            return data.map(function (path) {
+                var pathCopy = {
+                    color: {r: path.color.r, g: path.color.g, b: path.color.b},
+                    elements: path.elements.map(function (elem) {
+                        return {
+                            elementType: elem.elementType,
+                            points: elem.points.slice()
+                        };
+                    })
+                };
+                if (path.glowEffect) pathCopy.glowEffect = path.glowEffect;
+                if (path.fillStyle) pathCopy.fillStyle = path.fillStyle;
+                return pathCopy;
+            });
         };
 
-        figure.forEach(function (path) {
-            path.glowEffect ? drawGlowPath(path) : drawPath(path);
-        });
+        /**
+         * Draw figure.
+         * @return self-reference
+         */
+        this.draw = function () {
+            if (rotation.angle == 0) {
+                drawData();
+            } else {
+                ctx.save();
+                ctx.translate(rotation.x, rotation.y);
+                ctx.rotate(Math.PI * rotation.angle / 180);
+                ctx.translate(-rotation.x, -rotation.y);
+                drawData();
+                ctx.restore();
+            }
+            return this;
+        };
+
+        /**
+         * Sets rotation parameters. The parameters will applied while invoke draw() method.
+         * @param x x-coordinate of rotation center
+         * @param y y-coordinate of rotation center
+         * @param angle Angle of rotation, in degrees. If angle equal 0, then parameters not applied.
+         * @return self-reference
+         */
+        this.setRotation = function (x, y, angle) {
+            rotation.x = x;
+            rotation.y = y;
+            rotation.angle = angle;
+            return this;
+        };
     };
 
     var clearRect = function (x, y, w, h) {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(x, y, w, h);
-    };
-
-    var rotate = function (figure, x0, y0, angle) {
-        ctx.save();
-        ctx.translate(x0, y0);
-        ctx.rotate(Math.PI * angle / 180);
-        ctx.translate(-x0, -y0);
-        drawFigure(figure);
-        ctx.restore();  
     };
 
     var pen = function () {
@@ -224,7 +260,8 @@ var graphics = (function () {
 
             return {
                 doStep: function (diff) {
-                    rotate(figure, x, y, angle * diff);
+                    figure.setRotation(x, y, angle * diff).draw();
+                    // rotate(figure, x, y, angle * diff);
                 }
             };
         };
@@ -243,11 +280,12 @@ var graphics = (function () {
                 return errorFunc("Can't transform figure: source and target figure must contain the same number of paths");
             }
 
-            var workFigure = copyFigure(source);
+            var workData = source.getData();
+            var targetData = target.getData();
 
-            for (var path_indx = 0; path_indx < workFigure.length; path_indx++) {
-                var workPath = workFigure[path_indx];
-                var trgPath = target[path_indx];
+            for (var path_indx = 0; path_indx < workData.length; path_indx++) {
+                var workPath = workData[path_indx];
+                var trgPath = targetData[path_indx];
                 if (workPath.elements.length !== trgPath.elements.length) {
                     return errorFunc("Can't transform figure: figures must same number of elements in path #" 
                         + path_indx);
@@ -279,14 +317,14 @@ var graphics = (function () {
     
             return {
                 doStep: function (diff) {
-                    workFigure.forEach(function (path) {
+                    workData.forEach(function (path) {
                         path.elements.forEach(function (elem) {
                             elem.srcPoints.forEach(function (point, i) {
                                 elem.points[i] = point + elem.deltas[i] * diff;
                             });
                         });
                     });
-                    drawFigure(workFigure);
+                    new Figure(workData).draw();
                 }
             };
 
@@ -296,7 +334,7 @@ var graphics = (function () {
 
             return {
                 doStep: function (diff) {
-                    drawFigure(figure);
+                    figure.draw();
                 }
             };
         };
@@ -480,7 +518,7 @@ var graphics = (function () {
         return {
             addObservedFigure: function (figure) {
                 _id++;
-                _observedFigures[_id] = copyFigure(figure);
+                _observedFigures[_id] = figure.getData();
                 drawObservedFigures();
                 return _id;
             },
@@ -519,11 +557,12 @@ var graphics = (function () {
             return "rgb(" + r + "," + g + "," + b + ")";
         },
 
-        drawFigure: drawFigure,
-
-        copyFigure: copyFigure,
-
-        rotate: rotate,
+        createFigure: function (data) {
+            if (!Array.isArray(data)) {
+                throw new SyntaxError ("Figure data must be an array of paths.");
+            }
+            return new Figure(data);
+        },
 
         getEventManager: eventManager
     };

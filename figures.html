@@ -14,7 +14,7 @@
             backgroundColor: '#555'
         });
 
-        var arc = [
+        var arcData = [
             {
                 color: {r: 0, g: 0, b: 0xff},
                 elements: [
@@ -26,7 +26,7 @@
             }
         ];
 
-        var filledGreenCircle = [
+        var filledGreenCircleData = [
             {
                 color: {r: 0, g: 0xff, b: 0},
                 fillStyle: "#0f0",
@@ -39,7 +39,7 @@
             }
         ];
 
-        var circleWithTangents = [
+        var circleWithTangentsData = [
             {
                 color: {r: 0xff, g: 0x45, b: 0},
                 elements: [
@@ -78,17 +78,20 @@
         ];
 
         window.onload = function () {
-            graphics.drawFigure(fish);
-            graphics.drawFigure(eyeball);
-            graphics.drawFigure(leg);
-            graphics.drawFigure(straight_leg);
-            graphics.drawFigure(mouth);
-            graphics.drawFigure(hat);
-            graphics.drawFigure(hatEyeball);
-            graphics.drawFigure(hand);
-            // graphics.drawFigure(arc);
-            // graphics.drawFigure(filledGreenCircle);
-            // graphics.drawFigure(circleWithTangents);
+            graphics.createFigure(fishData).draw();
+            graphics.createFigure(eyeballData).draw();
+            graphics.createFigure(legData).draw();
+            graphics.createFigure(straightLegData).draw();
+            graphics.createFigure(mouthData).draw();
+            graphics.createFigure(hatData).draw();
+            graphics.createFigure(hatEyeballData).draw();
+            graphics.createFigure(handData).draw();
+            // graphics.createFigure(arcData).draw();
+            // graphics.createFigure(filledGreenCircleData).draw();
+            // graphics.createFigure(circleWithTangentsData).draw();
+
+            var newFigure = graphics.createFigure('new figure');
+            newFigure.draw();
         };
         
     </script>
