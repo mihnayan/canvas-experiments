@@ -99,15 +99,9 @@ var legData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [231,133, 231,149]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [231,164, 184,189]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [205,218, 205,245]
+                points: [231,133, 231,149,
+                        231,164, 184,189,
+                        205,218, 205,245]
             },
             {
                 elementType: "lineTo",
@@ -115,32 +109,14 @@ var legData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [223,267, 213,272]
+                points: [223,267, 213,272,
+                        198,277, 185,286,
+                        179,290, 164,290,
+                        155,288, 163,284,
+                        181,276, 186,265,
+                        186,231, 154,200,
+                        141,188, 146,180]
             },
-            {
-                elementType: "quadraticCurveTo",
-                points: [198,277, 185,286]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [179,290, 164,290]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [155,288, 163,284]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [181,276, 186,265]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [186,231, 154,200]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [141,188, 146,180]
-            }
         ]
     }
 ];
@@ -156,15 +132,9 @@ var straightLegData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [212,121, 225,139]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [233,150, 218,207]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [230,241, 223,275]
+                points: [212,121, 225,139,
+                        233,150, 218,207,
+                        230,241, 223,275]
             },
             {
                 elementType: "lineTo",
@@ -172,31 +142,13 @@ var straightLegData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [234,303, 222,304]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [206,303, 193,307]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [184,310, 169,305]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [160,300, 170,299]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [193,296, 199,286]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [207,257, 194,228]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [187,218, 187,211]
+                points: [234,303, 222,304,
+                        206,303, 193,307,
+                        184,310, 169,305,
+                        160,300, 170,299,
+                        193,296, 199,286,
+                        207,257, 194,228,
+                        187,218, 187,211]
             }
         ]
     }
@@ -226,43 +178,16 @@ var hatData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [464,135, 510,143]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [556,151, 596,116]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [625,92, 645,92]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [671,92, 683,108]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [667,104, 657,109]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [644,116, 634,157]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [618,219, 569,227]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [526,234, 493,194]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [470,165, 455,165]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [439,165, 427,181]
+                points: [464,135, 510,143,
+                        556,151, 596,116,
+                        625,92, 645,92,
+                        671,92, 683,108,
+                        667,104, 657,109,
+                        644,116, 634,157,
+                        618,219, 569,227,
+                        526,234, 493,194,
+                        470,165, 455,165,
+                        439,165, 427,181]
             }
         ]
     },
@@ -340,103 +265,31 @@ var handData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [506,121, 498,121]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [477,122, 471,118]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [465,114, 474,115]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [481,117, 484,116]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [489,114, 485,113]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [469,109, 466,105]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [465,101, 468,102]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [482,108, 490,108]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [492,108, 489,105]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [475,101, 471,96]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [469,92, 473,93]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [484,100, 489,100]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [492,100, 490,98]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [481,93, 478,89]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [477,86, 481,87]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [493,96, 499,96]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [503,96, 520,104]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [523,106, 532,106]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [590,112, 608,124]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [621,133, 609,157]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [590,194, 554,194]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [546,193, 543,189]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [533,176, 545,164]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [548,160, 557,157]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [572,151, 581,138]
+                points: [506,121, 498,121,
+                        477,122, 471,118,
+                        465,114, 474,115,
+                        481,117, 484,116,
+                        489,114, 485,113,
+                        469,109, 466,105,
+                        465,101, 468,102,
+                        482,108, 490,108,
+                        492,108, 489,105,
+                        475,101, 471,96,
+                        469,92, 473,93,
+                        484,100, 489,100,
+                        492,100, 490,98,
+                        481,93, 478,89,
+                        477,86, 481,87,
+                        493,96, 499,96,
+                        503,96, 520,104,
+                        523,106, 532,106,
+                        590,112, 608,124,
+                        621,133, 609,157,
+                        590,194, 554,194,
+                        546,193, 543,189,
+                        533,176, 545,164,
+                        548,160, 557,157,
+                        572,151, 581,138]
             }
         ]
     }
