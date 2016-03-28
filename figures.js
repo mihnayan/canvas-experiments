@@ -9,23 +9,11 @@ var mouthData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [211,92, 224,107]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [242,102, 258,107]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [292,117, 337,184]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [268,206, 190,185]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [136,167, 85,105]
+                points: [211,92, 224,107,
+                        242,102, 258,107,
+                        292,117, 337,184,
+                        268,206, 190,185,
+                        136,167, 85,105]
             }
         ]
     },
@@ -66,24 +54,12 @@ var fishData = [
             },
             {
                 elementType: "quadraticCurveTo",
-                points: [262,120, 309, 166]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [327,153, 361,159]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [325,187, 340,223]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [315,206, 302,188]
-            },
-            {
-                elementType: "quadraticCurveTo",
-                points: [157,209, 111,115]
-            },
+                points: [262,120, 309,166,
+                        327,153, 361,159,
+                        325,187, 340,223,
+                        315,206, 302,188,
+                        157,209, 111,115]
+            }
         ]
     },
     {

@@ -68,7 +68,9 @@ var graphics = (function () {
                 context.quadraticCurveTo(points[2], points[3], points[4], points[5]);
             },
             quadraticCurveTo: function (points) {
-                context.quadraticCurveTo(points[0], points[1], points[2], points[3]);
+                for (var i = 0; i < points.length; i += 4) {
+                    context.quadraticCurveTo(points[i], points[i+1], points[i+2], points[i+3]);
+                }
             },
             arc: function (points) {
                 context.arc(points[0], points[1], points[2], points[3], points[4]);
@@ -99,7 +101,7 @@ var graphics = (function () {
         };
     };
 
-    var Figure = function (data) {
+    var Figure = function (paths) {
 
         var rotation = {
             x: 0,
@@ -136,17 +138,17 @@ var graphics = (function () {
                 ctx.lineCap = 'butt';
             };
 
-            data.forEach(function (path) {
+            paths.forEach(function (path) {
                 path.glowEffect ? drawGlowPath(path) : drawPath(path);
             });
         }
 
         /**
-         * Returns copy of figure data
-         * @return Figure data in JSON format
+         * Returns copy of figure paths
+         * @return Figure paths in JSON format
          */
-        this.getData = function() {
-            return data.map(function (path) {
+        this.getPaths = function () {
+            return paths.map(function (path) {
                 var pathCopy = {
                     color: {r: path.color.r, g: path.color.g, b: path.color.b},
                     elements: path.elements.map(function (elem) {
@@ -261,70 +263,81 @@ var graphics = (function () {
             return {
                 doStep: function (diff) {
                     figure.setRotation(x, y, angle * diff).draw();
-                    // rotate(figure, x, y, angle * diff);
                 }
             };
         };
 
-        var getTransformationMove = function (source, target) {
+        var canTransformPaths = function (sourcePaths, targetPaths) {
 
-            var errorFunc = function (msg) {
-                return {
-                    doStep: function () {
-                        console.log(msg);
-                    }
-                };
-            };
+            var message = ["Can't transform fugure."];
 
-            if (source.length !== target.length) {
-                return errorFunc("Can't transform figure: source and target figure must contain the same number of paths");
+            var isSimilarElements = function (srcElements, trgElements) {
+                if (srcElements.length === trgElements.length) {
+                    return srcElements.every(function (element, index) {
+                        var similarElements = 
+                                (element.elementType === trgElements[index].elementType)
+                                && (element.points.length === trgElements[index].points.length);
+                        if (!similarElements) {
+                            message.push("Elements #" + index + " must be similar.");
+                        }
+                        return similarElements;
+                    });
+                } else {
+                    message.push("Path must contain same number of elements");
+                }
+                return false;
             }
 
-            var workData = source.getData();
-            var targetData = target.getData();
+            var canTransform = sourcePaths.length === targetPaths.length;
 
-            for (var path_indx = 0; path_indx < workData.length; path_indx++) {
-                var workPath = workData[path_indx];
-                var trgPath = targetData[path_indx];
-                if (workPath.elements.length !== trgPath.elements.length) {
-                    return errorFunc("Can't transform figure: figures must same number of elements in path #" 
-                        + path_indx);
-                }
+            if (canTransform) {
+                canTransform = sourcePaths.every(function (path, index) {
+                    var similarElements = isSimilarElements(path.elements, targetPaths[index].elements);
+                    if (!similarElements) {
+                        message.push("Elements in path #" + index + " must be similar.");
+                    }
+                    return similarElements;
+                });
+            } else {
+                message.push("Source and target figure must contain the same number of paths");
+            }
+
+            if (!canTransform) {
+                console.log(message.join(" "));
+            }
+
+            return canTransform;
+        }
+
+        var getTransformationMove = function (sourcePaths, targetPaths) {
+
+            for (var path_indx = 0; path_indx < sourcePaths.length; path_indx++) {
+                var workPath = sourcePaths[path_indx];
+                var targetPath = targetPaths[path_indx];
 
                 for (var elem_indx = 0; elem_indx < workPath.elements.length; elem_indx++) {
-                    var workElem = workPath.elements[elem_indx];
-                    var trgElem = trgPath.elements[elem_indx];
-                    if (workElem.elementType !== trgElem.elementType) {
-                        return errorFunc("Can't transform element type \"" 
-                            + workElem.elementType
-                            + "\" to \"" + trgElem.elementType + "\" in path #"
-                            + path_indx + "element #" + elem_indx);
-                    }
-                    var workPoints = workElem.points;
-                    var trgPoints = trgElem.points;
-                    if (workPoints.length !== trgPoints.length) {
-                        return errorFunc("Can't transform element #" + elem_indx + " in path #"
-                            + path_indx +": elements must contain same number of points");
-                    }
+                    var workElement = workPath.elements[elem_indx];
+                    var targetElement = targetPath.elements[elem_indx];
+                    var workPoints = workElement.points;
+                    var targetPoints = targetElement.points;
 
-                    workElem.srcPoints = workElem.points.slice();
-                    workElem.deltas = [];
-                    workPoints.forEach(function (point, i) {
-                        workElem.deltas.push(trgPoints[i] - point);
+                    workElement.srcPoints = workPoints.slice();
+                    workElement.deltas = workPoints.map(function (point, index) {
+                        return targetPoints[index] - point;
                     });
                 }
             }
     
             return {
                 doStep: function (diff) {
-                    workData.forEach(function (path) {
+                    sourcePaths.forEach(function (path) {
                         path.elements.forEach(function (elem) {
                             elem.srcPoints.forEach(function (point, i) {
                                 elem.points[i] = point + elem.deltas[i] * diff;
                             });
                         });
                     });
-                    new Figure(workData).draw();
+                    new Figure(sourcePaths).draw();
                 }
             };
 
@@ -427,7 +440,11 @@ var graphics = (function () {
             }, 
 
             getTransformMotion: function (sourceFigure, targetFigure, inTime) {
-                return getMotion(getTransformationMove(sourceFigure, targetFigure), inTime);
+                var sourcePaths = sourceFigure.getPaths();
+                var targetPaths = targetFigure.getPaths();
+                if (canTransformPaths(sourcePaths, targetPaths)) {
+                    return getMotion(getTransformationMove(sourcePaths, targetPaths), inTime);
+                }
             },
 
             getStaticMotion: function (figure) {
@@ -518,7 +535,7 @@ var graphics = (function () {
         return {
             addObservedFigure: function (figure) {
                 _id++;
-                _observedFigures[_id] = figure.getData();
+                _observedFigures[_id] = figure.getPaths();
                 drawObservedFigures();
                 return _id;
             },
@@ -557,11 +574,11 @@ var graphics = (function () {
             return "rgb(" + r + "," + g + "," + b + ")";
         },
 
-        createFigure: function (data) {
-            if (!Array.isArray(data)) {
+        createFigure: function (paths) {
+            if (!Array.isArray(paths)) {
                 throw new SyntaxError ("Figure data must be an array of paths.");
             }
-            return new Figure(data);
+            return new Figure(paths);
         },
 
         getEventManager: eventManager
