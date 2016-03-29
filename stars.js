@@ -74,6 +74,13 @@ var drawStars = function () {
 }
 
 window.onload = function () {
+
+    var starLevelsElements = document.getElementsByClassName('star-levels');
+    for (var i = 0; i < starLevelsElements.length; i++) {
+        if (i >= stars.length) break;
+        stars[i].level = starLevelsElements[i].value;
+    }
+
     var ctx = document.getElementById("cnv").getContext("2d");
     graphics.init({canvasContext: ctx});
     drawStars();
