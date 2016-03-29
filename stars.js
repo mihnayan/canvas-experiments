@@ -29,6 +29,7 @@ var stars = [
 
 var drawStars = function () {
 
+    graphics.clearCanvas();
     var pen = graphics.pen;
 
     var drawKokhLine = function (lenght, deep) {
@@ -70,18 +71,31 @@ var drawStars = function () {
             pen.turn(120);
             drawKokhLine(edgeLength, stars[n].level);
         }
-    }  
+    }
+
+    pen.turn(-30);
 }
 
-window.onload = function () {
-
+var setStarsParameters = function () {
     var starLevelsElements = document.getElementsByClassName('star-levels');
     for (var i = 0; i < starLevelsElements.length; i++) {
         if (i >= stars.length) break;
         stars[i].level = starLevelsElements[i].value;
     }
+}
 
+window.onload = function () {
     var ctx = document.getElementById("cnv").getContext("2d");
     graphics.init({canvasContext: ctx});
+
+    var inputElements = document.getElementsByTagName('input');
+    for (var i = 0; i < inputElements.length; i++) {
+        inputElements[i].addEventListener('change', function () {
+            setStarsParameters();
+            drawStars();
+        });
+    }
+
+    setStarsParameters();
     drawStars();
 }
