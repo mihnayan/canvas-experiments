@@ -559,6 +559,10 @@ var graphics = (function () {
             if (!backgroundColor) {
                 backgroundColor = '#fff';
             }
+            this.clearCanvas();
+        },
+
+        clearCanvas: function () {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0,0, ctx.canvas.width, ctx.canvas.height);
         },
