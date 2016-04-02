@@ -1,0 +1,5 @@
+@import "__context/canvas__context.css";
+
+.canvas {
+    float: left;
+}

@@ -2,16 +2,29 @@
 <html>
 <head>
     <title>Mihnayan experiments with Canvas</title>
+    <link rel="stylesheet" type="text/css" href="blocks/canvas/canvas.css">
+    <link rel="stylesheet" type="text/css" href="blocks/manage-panel/manage-panel.css">
+
+    <link rel="stylesheet" type="text/css" href="blocks/star-parameters/star-parameters.css">
+    <script type="text/javascript" src="blocks/star-parameters/star-parameters.js"></script>
 </head>
 <body>
-    <div style="float: left;">
-        <canvas id="cnv" width="1024" height="768" style="border: 1px solid #ccc;"></canvas>
+    <div class="canvas">
+        <canvas id="cnv" class="canvas__context" width="1024" height="768"></canvas>
     </div>
-    <div id="panel">
-        <label>
-            Star #1 level
-            <input class="star-levels" type="text" value="3">
-        </label><br>
+    <div id="manage-panel" class="manage-panel">
+        <button type="button" class="manage-panel__button" id="add-star-button">Add star</button>
+        <div class="star-parameters star-parameters_hidden">
+            <p class="star-parameters__star-head">Star #1 parameters</p>
+            <label>
+                Star #1 level
+                <input class="star-parameters__star-level" type="text" value="3">
+            </label>
+            <label>
+                Star #1 increment
+                <input class="star-parameters__star-increment" type="text" value="0">
+            </label>
+        </div>
         <label>
             Star #2 level
             <input class="star-levels" type="text" value="0">
@@ -33,6 +46,7 @@
             <input class="star-levels" type="text" value="0">
         </label><br>
     </div>
+
     <script type="text/javascript" src="mihnayan.graphic.js"></script>
     <script type="text/javascript" src="stars.js"></script>
 </body>

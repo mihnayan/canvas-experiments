@@ -84,6 +84,21 @@ var setStarsParameters = function () {
     }
 }
 
+// var ManagePanelFactory = function () {
+
+//     var managePanel = document.getElementById('manage-panel');
+//     var starParameters = document.getElementsByClassName('star-parameters_hidden')[0];
+    
+//     return {
+//         addStarParameterBlock: function () {
+//             newStarParameters = starParameters.cloneNode();
+
+//             managePanel.appendChild(newStarParameters);
+//         }
+//     }
+// }
+
+
 window.onload = function () {
     var ctx = document.getElementById("cnv").getContext("2d");
     graphics.init({canvasContext: ctx});
@@ -98,4 +113,16 @@ window.onload = function () {
 
     setStarsParameters();
     drawStars();
+
+    var addButton = document.getElementById('add-star-button');
+    var starNumber = 0;
+    addButton.addEventListener('click', function () {
+        starNumber++;
+        var fragment = starParametersBlock.getNewBlock(starNumber, 
+            'Star #' + starNumber + ' parameters');
+        var managePanel = document.getElementById('manage-panel');
+        managePanel.appendChild(fragment);
+    });
+
+    // addStarParameterBlock();
 }
