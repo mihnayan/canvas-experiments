@@ -84,6 +84,34 @@ var setStarsParameters = function () {
     }
 }
 
+var starParametersStore = (function () {
+
+    var store = [];
+    
+    return {
+        add: function (item) {
+            store.push(item);
+        },
+        get: function (id) {
+            for (var i = 0; i < store.length; i++) {
+                if (store[i].id === id) {
+                    return store[i];
+                }
+            }
+        },
+        getAll: function () {
+            return store.slice();
+        },
+        remove: function (id) {
+            for (var i = 0; i < store.length; i++) {
+                if (store[i].id === id) {
+                    return store.splice(i, 1)[0];
+                }
+            }
+        }
+    }
+})();
+
 var addStarParameterBlock = function (managePanel) {
     if (typeof managePanel !== 'Object'
             && !managePanel.nodeType 
@@ -97,7 +125,10 @@ var addStarParameterBlock = function (managePanel) {
         starNumber++;
         var starParametersBlock = new StarParametersBlock(starNumber, 
             'Star #' + starNumber + ' parameters');
+        starParametersStore.add(starParametersBlock);
+
         starParametersBlock.bind('removeParameters', function () {
+            starParametersStore.remove(starParametersBlock.id);
             managePanel.removeChild(starParametersBlock.blockElement);
         });
         managePanel.appendChild(starParametersBlock.blockElement);
