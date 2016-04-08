@@ -12,11 +12,11 @@
         '</div>',
         '<label>',
         '    Level',
-        '    <input class="star-parameters__star-level" type="text" value="3">',
+        '    <input class="star-parameters__star-level" type="text">',
         '</label>',
         '<label>',
         '    Radius',
-        '    <input class="star-parameters__star-radius" type="text" value="0">',
+        '    <input class="star-parameters__star-radius" type="text">',
         '</label>'
     ].join('\n');
 
@@ -46,9 +46,22 @@
     };
 
     StarParametersBlock.prototype.bind = function(eventName, callback) {
+        var self = this;
+
         if (eventName === 'removeParameters') {
-            this.blockElement.querySelector('.star-parameters__delete-parameters')
+            self.blockElement.querySelector('.star-parameters__delete-parameters')
                 .addEventListener('click', callback);
+        } else if (eventName === 'changeParameters') {
+            self.blockElement.querySelector('.star-parameters__star-level')
+                .addEventListener('change', function () {
+                    self.level = this.value;
+                    callback();
+                });
+            self.blockElement.querySelector('.star-parameters__star-radius')
+                .addEventListener('change', function () {
+                    self.radius = this.value;
+                    callback();
+                });
         }
     };
 

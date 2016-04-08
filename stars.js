@@ -103,7 +103,7 @@ var starParametersStore = (function () {
     }
 })();
 
-var getStarsParameters = function () {
+function reDrawStars() {
     var starParameters = starParametersStore.getAll();
     var stars = [];
     for (var i = 0; i < starParameters.length; i++) {
@@ -113,7 +113,7 @@ var getStarsParameters = function () {
         };
         stars.push(data);
     }
-    return stars;
+    drawStars(stars);
 }
 
 window.onload = function () {
@@ -131,8 +131,9 @@ window.onload = function () {
             starParametersBlock.bind('removeParameters', function () {
                 starParametersStore.remove(starParametersBlock.id);
                 managePanel.removeChild(starParametersBlock.blockElement);
-                drawStars(getStarsParameters());
+                reDrawStars();
             });
+            starParametersBlock.bind('changeParameters', reDrawStars);
             managePanel.appendChild(starParametersBlock.blockElement);
     };
 
@@ -142,7 +143,7 @@ window.onload = function () {
             level: 0,
             radius: 10
         });
-        drawStars(getStarsParameters());
+        reDrawStars();
     });
 
     for (var i = 0; i < starsInit.length; i++) {
@@ -152,5 +153,5 @@ window.onload = function () {
         });
     }
 
-    drawStars(getStarsParameters());
+    reDrawStars();
 }
