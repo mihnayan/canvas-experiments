@@ -4,30 +4,34 @@ var starInit = {
     edgeLength: 70
 };
 
-var stars = [
+var starsInit = [
     { 
         level: 0,
-        decrement: 0
+        increment: 0
     },
     { 
         level: 1,
-        decrement: 100
+        increment: 100
     },
     {
         level: 2,
-        decrement: 100
+        increment: 100
     },
     {
         level: 3,
-        decrement: 133
+        increment: 133
     },
     {
         level: 4,
-        decrement: 200
+        increment: 200
     }
 ];
 
-var drawStars = function () {
+var drawStars = function (stars) {
+
+    if (!Array.isArray(stars)) {
+        return;
+    }
 
     graphics.clearCanvas();
     var pen = graphics.pen;
@@ -49,15 +53,15 @@ var drawStars = function () {
     }
 
     var edgeLength = starInit.edgeLength;
-    var decrement = 0;
+    var increment = 0;
 
     pen.setLineWidth(3);
     pen.turn(30);
     for (var n = 0; n < stars.length; n++) {
 
-        decrement += stars[n].decrement;
+        increment += stars[n].increment;
         // inscribed circle radius
-        var radius = (decrement + starInit.edgeLength) * Math.sqrt(3) / 6;
+        var radius = (increment + starInit.edgeLength) * Math.sqrt(3) / 6;
 
         if (n !== 0) {
             edgeLength = 6 * radius / Math.sqrt(3);
@@ -74,14 +78,6 @@ var drawStars = function () {
     }
 
     pen.turn(-30);
-}
-
-var setStarsParameters = function () {
-    var starLevelsElements = document.getElementsByClassName('star-levels');
-    for (var i = 0; i < starLevelsElements.length; i++) {
-        if (i >= stars.length) break;
-        stars[i].level = starLevelsElements[i].value;
-    }
 }
 
 var starParametersStore = (function () {
@@ -112,46 +108,56 @@ var starParametersStore = (function () {
     }
 })();
 
-var addStarParameterBlock = function (managePanel) {
-    if (typeof managePanel !== 'Object'
-            && !managePanel.nodeType 
-            && managePanel.nodeType !== managePanel.ELEMENT_NODE) {
-        
-        return;
+var getStarsParameters = function () {
+    var starParameters = starParametersStore.getAll();
+    var stars = [];
+    for (var i = 0; i < starParameters.length; i++) {
+        var data = {
+            level: starParameters[i].level,
+            increment: starParameters[i].increment
+        };
+        stars.push(data);
     }
-
-    var starNumber = 0;
-    return function () {
-        starNumber++;
-        var starParametersBlock = new StarParametersBlock(starNumber, 
-            'Star #' + starNumber + ' parameters');
-        starParametersStore.add(starParametersBlock);
-
-        starParametersBlock.bind('removeParameters', function () {
-            starParametersStore.remove(starParametersBlock.id);
-            managePanel.removeChild(starParametersBlock.blockElement);
-        });
-        managePanel.appendChild(starParametersBlock.blockElement);
-    };
-};
+    return stars;
+}
 
 window.onload = function () {
     var ctx = document.getElementById("cnv").getContext("2d");
     graphics.init({canvasContext: ctx});
 
-    var inputElements = document.getElementsByTagName('input');
-    for (var i = 0; i < inputElements.length; i++) {
-        inputElements[i].addEventListener('change', function () {
-            setStarsParameters();
-            drawStars();
+    var managePanel = document.getElementById('manage-panel');
+
+    var addStarParameterBlock = (function () {
+        if (typeof managePanel !== 'Object'
+                && !managePanel.nodeType 
+                && managePanel.nodeType !== managePanel.ELEMENT_NODE) {
+        
+            return;
+        }
+
+        var starNumber = 0;
+        return function (data) {
+            starNumber++;
+            var starParametersBlock = new StarParametersBlock(starNumber, data);
+            starParametersStore.add(starParametersBlock);
+
+            starParametersBlock.bind('removeParameters', function () {
+                starParametersStore.remove(starParametersBlock.id);
+                managePanel.removeChild(starParametersBlock.blockElement);
+            });
+            managePanel.appendChild(starParametersBlock.blockElement);
+        };
+    })();
+
+    var addButton = managePanel.getElementsByClassName('manage-panel__add-star-button')[0];
+    addButton.addEventListener('click', addStarParameterBlock);
+
+    for (var i = 0; i < starsInit.length; i++) {
+        addStarParameterBlock({
+            level: starsInit[i].level,
+            increment: starsInit[i].increment
         });
     }
 
-    setStarsParameters();
-    drawStars();
-
-    var managePanel = document.getElementById('manage-panel');
-    var addButton = managePanel.getElementsByClassName('manage-panel__add-star-button')[0];
-    addButton.addEventListener('click', addStarParameterBlock(managePanel));
-
+    drawStars(getStarsParameters());
 }
