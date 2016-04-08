@@ -15,8 +15,8 @@
         '    <input class="star-parameters__star-level" type="text" value="3">',
         '</label>',
         '<label>',
-        '    Increment',
-        '    <input class="star-parameters__star-increment" type="text" value="0">',
+        '    Radius',
+        '    <input class="star-parameters__star-radius" type="text" value="0">',
         '</label>'
     ].join('\n');
 
@@ -33,16 +33,16 @@
         this.id = blockId;
         this.blockElement = blockElement;
         this.level = 0;
-        this.increment = 0;
+        this.radius = 10;
 
         if (data.level) {
             this.level = data.level;
         }
-        if (data.increment) {
-            this.increment = data.increment;
+        if (data.radius) {
+            this.radius = data.radius;
         }
         blockElement.querySelector('.star-parameters__star-level').value = this.level;
-        blockElement.querySelector('.star-parameters__star-increment').value = this.increment;
+        blockElement.querySelector('.star-parameters__star-radius').value = this.radius;
     };
 
     StarParametersBlock.prototype.bind = function(eventName, callback) {

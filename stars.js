@@ -7,23 +7,23 @@ var drawInit = {
 var starsInit = [
     { 
         level: 0,
-        increment: 0
+        radius: 20
     },
     { 
         level: 1,
-        increment: 100
+        radius: 49
     },
     {
         level: 2,
-        increment: 100
+        radius: 78
     },
     {
         level: 3,
-        increment: 133
+        radius: 116
     },
     {
         level: 4,
-        increment: 200
+        radius: 174
     }
 ];
 
@@ -52,17 +52,14 @@ var drawStars = function (stars) {
     graphics.clearCanvas();
     var pen = graphics.pen;
     var edgeLength = drawInit.edgeLength;
-    var increment = 0;
+    var radius = 0;
 
     pen.move(drawInit.centerX, drawInit.centerY);
     pen.setLineWidth(3);
     pen.turn(30);
     for (var n = 0; n < stars.length; n++) {
 
-        increment += stars[n].increment;
-        // inscribed circle radius
-        var radius = (increment + drawInit.edgeLength) * Math.sqrt(3) / 6;
-        
+        radius = stars[n].radius;      
         edgeLength = 6 * radius / Math.sqrt(3);
         var triangleHeight = edgeLength * Math.cos(Math.PI / 6);
         var angleY = drawInit.centerY + (triangleHeight - radius);
@@ -112,7 +109,7 @@ var getStarsParameters = function () {
     for (var i = 0; i < starParameters.length; i++) {
         var data = {
             level: starParameters[i].level,
-            increment: starParameters[i].increment
+            radius: starParameters[i].radius
         };
         stars.push(data);
     }
@@ -154,7 +151,7 @@ window.onload = function () {
     for (var i = 0; i < starsInit.length; i++) {
         addStarParameterBlock({
             level: starsInit[i].level,
-            increment: starsInit[i].increment
+            radius: starsInit[i].radius
         });
     }
 
