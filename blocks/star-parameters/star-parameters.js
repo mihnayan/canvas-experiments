@@ -33,7 +33,7 @@
         this.id = blockId;
         this.blockElement = blockElement;
         this.level = 0;
-        this.radius = 10;
+        this.radius = 0;
 
         if (data.level) {
             this.level = data.level;

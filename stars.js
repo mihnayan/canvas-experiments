@@ -29,7 +29,7 @@ var starsInit = [
 
 var drawStars = function (stars) {
 
-    if (!Array.isArray(stars) || stars.length === 0) {
+    if (!Array.isArray(stars)) {
         return;
     }
 
@@ -122,16 +122,8 @@ window.onload = function () {
 
     var managePanel = document.getElementById('manage-panel');
 
-    var addStarParameterBlock = (function () {
-        if (typeof managePanel !== 'Object'
-                && !managePanel.nodeType 
-                && managePanel.nodeType !== managePanel.ELEMENT_NODE) {
-        
-            return;
-        }
-
-        var starNumber = 0;
-        return function (data) {
+    var starNumber = 0;
+    var addStarParameters = function (data) {
             starNumber++;
             var starParametersBlock = new StarParametersBlock(starNumber, data);
             starParametersStore.add(starParametersBlock);
@@ -142,14 +134,19 @@ window.onload = function () {
                 drawStars(getStarsParameters());
             });
             managePanel.appendChild(starParametersBlock.blockElement);
-        };
-    })();
+    };
 
     var addButton = managePanel.getElementsByClassName('manage-panel__add-star-button')[0];
-    addButton.addEventListener('click', addStarParameterBlock);
+    addButton.addEventListener('click', function () {
+        addStarParameters({
+            level: 0,
+            radius: 10
+        });
+        drawStars(getStarsParameters());
+    });
 
     for (var i = 0; i < starsInit.length; i++) {
-        addStarParameterBlock({
+        addStarParameters({
             level: starsInit[i].level,
             radius: starsInit[i].radius
         });
