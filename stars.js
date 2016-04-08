@@ -1,4 +1,4 @@
-var starInit = {
+var drawInit = {
     centerX: 450,
     centerY: 370,
     edgeLength: 70
@@ -29,12 +29,9 @@ var starsInit = [
 
 var drawStars = function (stars) {
 
-    if (!Array.isArray(stars)) {
+    if (!Array.isArray(stars) || stars.length === 0) {
         return;
     }
-
-    graphics.clearCanvas();
-    var pen = graphics.pen;
 
     var drawKokhLine = function (lenght, deep) {
         if (deep == 0) {
@@ -52,24 +49,25 @@ var drawStars = function (stars) {
         drawKokhLine(linePart, deep - 1);
     }
 
-    var edgeLength = starInit.edgeLength;
+    graphics.clearCanvas();
+    var pen = graphics.pen;
+    var edgeLength = drawInit.edgeLength;
     var increment = 0;
 
+    pen.move(drawInit.centerX, drawInit.centerY);
     pen.setLineWidth(3);
     pen.turn(30);
     for (var n = 0; n < stars.length; n++) {
 
         increment += stars[n].increment;
         // inscribed circle radius
-        var radius = (increment + starInit.edgeLength) * Math.sqrt(3) / 6;
-
-        if (n !== 0) {
-            edgeLength = 6 * radius / Math.sqrt(3);
-        }
+        var radius = (increment + drawInit.edgeLength) * Math.sqrt(3) / 6;
+        
+        edgeLength = 6 * radius / Math.sqrt(3);
         var triangleHeight = edgeLength * Math.cos(Math.PI / 6);
-        var angleY = starInit.centerY + (triangleHeight - radius);
+        var angleY = drawInit.centerY + (triangleHeight - radius);
 
-        pen.move(starInit.centerX, angleY);
+        pen.move(drawInit.centerX, angleY);
         pen.setStyle(graphics.getRandomColorStyle());
         for (var i = 1; i <= 3; i++) {
             pen.turn(120);
@@ -144,6 +142,7 @@ window.onload = function () {
             starParametersBlock.bind('removeParameters', function () {
                 starParametersStore.remove(starParametersBlock.id);
                 managePanel.removeChild(starParametersBlock.blockElement);
+                drawStars(getStarsParameters());
             });
             managePanel.appendChild(starParametersBlock.blockElement);
         };
