@@ -2,12 +2,10 @@
     'use strict';
 
     var htmlTemplate = [
-        '<div class="star-parameters__star-head">',
-            '<%head%>',
-        '</div>',
         '<div>',
+            '<span class="star-parameters__star-head"><%head%></span>',
             '<button class="star-parameters__delete-parameters" type="button">',
-                'x',
+                '&#215;',
             '</button>',
         '</div>',
         '<label>',
