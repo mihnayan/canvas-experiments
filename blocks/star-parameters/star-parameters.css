@@ -1,2 +1,10 @@
-@import "_hidden/star-parameters_hidden.css";
-@import "__delete-parameters/star-parameters__delete-parameters.css";
+@import "head/star-parameters__head.css";
+@import "levers/star-parameters__levers.css";
+
+.star-parameters {
+   padding: 3px;
+   border: 1px solid transparent;
+}
+.star-parameters:hover {
+    border: 1px solid grey;
+}

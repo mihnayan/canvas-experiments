@@ -1,3 +1,6 @@
+@import "__add-star-button/manage-panel__add-star-button.css";
+
 .manage-panel {
     float: left;
+    position: relative;
 }

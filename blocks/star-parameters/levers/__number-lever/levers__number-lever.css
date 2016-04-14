@@ -1,0 +1,11 @@
+@import "_star-radius/levers__number-lever_star-radius.css";
+@import "_star-level/levers__number-lever_star-level.css";
+
+.levers__number-lever {
+    display: inline-block;
+    width: 43%;
+}
+
+.levers__number-lever input {
+    width: 60%;
+}

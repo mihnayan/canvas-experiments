@@ -2,20 +2,26 @@
     'use strict';
 
     var htmlTemplate = [
-        '<div>',
-            '<span class="star-parameters__star-head"><%head%></span>',
-            '<button class="star-parameters__delete-parameters" type="button">',
+        '<div class="star-parameters__head">',
+            '<span class="head__star-name"><%head%></span>',
+            '<button class="head__delete-button" type="button">',
                 '&#215;',
             '</button>',
         '</div>',
-        '<label>',
-        '    Level',
-        '    <input class="star-parameters__star-level" type="text">',
-        '</label>',
-        '<label>',
-        '    Radius',
-        '    <input class="star-parameters__star-radius" type="text">',
-        '</label>'
+        '<div class="star-parameters__levers">',
+            '<div class="levers__number-lever levers__number-lever_star-level">',
+                '<label>',
+                    'Level',
+                    '<input type="text">',
+                '</label>',
+            '</div>',
+            '<div class="levers__number-lever levers__number-lever_star-radius">',
+                '<label>',
+                    'Radius',
+                    '<input type="text">',
+                '</label>',
+            '</div>',
+        '</div>'
     ].join('\n');
 
     function StarParametersBlock (id, data) {
@@ -39,23 +45,23 @@
         if (data.radius) {
             this.radius = data.radius;
         }
-        blockElement.querySelector('.star-parameters__star-level').value = this.level;
-        blockElement.querySelector('.star-parameters__star-radius').value = this.radius;
+        blockElement.querySelector('.levers__number-lever_star-level input').value = this.level;
+        blockElement.querySelector('.levers__number-lever_star-radius input').value = this.radius;
     };
 
     StarParametersBlock.prototype.bind = function(eventName, callback) {
         var self = this;
 
         if (eventName === 'removeParameters') {
-            self.blockElement.querySelector('.star-parameters__delete-parameters')
+            self.blockElement.querySelector('.head__delete-button')
                 .addEventListener('click', callback);
         } else if (eventName === 'changeParameters') {
-            self.blockElement.querySelector('.star-parameters__star-level')
+            self.blockElement.querySelector('.levers__number-lever_star-level input')
                 .addEventListener('change', function () {
                     self.level = this.value;
                     callback();
                 });
-            self.blockElement.querySelector('.star-parameters__star-radius')
+            self.blockElement.querySelector('.levers__number-lever_star-radius input')
                 .addEventListener('change', function () {
                     self.radius = this.value;
                     callback();

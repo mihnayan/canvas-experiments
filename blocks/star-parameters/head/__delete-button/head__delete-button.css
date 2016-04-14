@@ -1,0 +1,13 @@
+.head__delete-button {
+    background: transparent;
+    border: 0;
+    color: #cc9a9a;
+    font-size: 20px;
+    display: block;
+    float: right;
+}
+
+.head__delete-button:hover {
+    color: #af5b5e;
+    font-weight: bold;
+}
